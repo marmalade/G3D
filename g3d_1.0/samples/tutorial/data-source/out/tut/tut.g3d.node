@@ -1,0 +1,8 @@
+node tut.tut node
+child tut.tut.cube
+
+node tut.tut.cube geometry
+translate translate {X:-0.06442109 Y:0.4567521 Z:-0.1219884}
+model tut.cubeShape
+material tut.stone_textplain
+

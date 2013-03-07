@@ -1,0 +1,139 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>model text file format &mdash; G3D 1.00 release 1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.00 release 1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="G3D 1.00 release 1 documentation" href="index.html" />
+    <link rel="next" title="node text file format" href="fftnode.html" />
+    <link rel="prev" title="texture text file format" href="ffttexture.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="fftnode.html" title="node text file format"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="ffttexture.html" title="texture text file format"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">G3D 1.00 release 1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="model-text-file-format">
+<h1>model text file format<a class="headerlink" href="#model-text-file-format" title="Permalink to this headline">¶</a></h1>
+<p>This file has a mesh, that is a set of vertex and index buffers arranged into sub models.</p>
+<blockquote>
+<div><p>material &lt;num&gt;</p>
+<blockquote>
+<div>Start of a sub model, each sub model is associated with single material. When a
+model is created from a mesh, the num&#8217;th material is associated with this sub model.</div></blockquote>
+<p>vb &lt;num&gt; &lt;size&gt;</p>
+<blockquote>
+<div>This specifies a vertex buffer with num vertices, each vertex take up size bytes.</div></blockquote>
+<p>v [ &lt;float&gt;]*</p>
+<blockquote>
+<div>This specifies a vertex as a list of floats.</div></blockquote>
+<p>ve &lt;name&gt; &lt;num&gt; &lt;size&gt; type offset</p>
+<blockquote>
+<div><p>This specifies a single channel in a a vertex (e.g. vertices, colur etc).</p>
+<p>name matches an attribute in glsl and the semantic of an input variable in hlsl.</p>
+<p>num is the number of components of the channel (e.g. normals have 3).</p>
+<p>size is the size in bits of each component.</p>
+<p>type is one of: float|unsigned|signed specifying the format of the component.</p>
+<p>offset is the offset in the channel this data starts at (usually the sum of the previous channels num*size).</p>
+</div></blockquote>
+<p>ib &lt;num&gt; &lt;size&gt;</p>
+<blockquote>
+<div>This specifies an index buffer with num indexes, each index take up size bytes.</div></blockquote>
+<p>i [ &lt;int&gt;]*</p>
+<blockquote>
+<div>This specifies some of the indexes.</div></blockquote>
+<p>is &lt;type&gt; &lt;size&gt;</p>
+<blockquote>
+<div>This specifies the type of the index buffer and its size in bits.
+The type is one of: Triangles|Lines|LineStrips|TriFans|TriStrip.</div></blockquote>
+</div></blockquote>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="ffttexture.html"
+                        title="previous chapter">texture text file format</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="fftnode.html"
+                        title="next chapter">node text file format</a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="fftnode.html" title="node text file format"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="ffttexture.html" title="texture text file format"
+             >previous</a> |</li>
+        <li><a href="index.html">G3D 1.00 release 1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Philip Hodgson.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,196 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Converter &mdash; G3D 1.00 release 1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.00 release 1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="G3D 1.00 release 1 documentation" href="index.html" />
+    <link rel="next" title="effect text file format" href="ffteffect.html" />
+    <link rel="prev" title="Tier 2" href="tier2.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="ffteffect.html" title="effect text file format"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="tier2.html" title="Tier 2"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">G3D 1.00 release 1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="converter">
+<h1>Converter<a class="headerlink" href="#converter" title="Permalink to this headline">¶</a></h1>
+<p>This takes COLLADA files, image files and its own xml configuration files and converts then into
+text and binary files in formats that G3D understands. The converter runs on plugins and
+all elements of it can be extended and replaced.</p>
+<div class="section" id="output">
+<h2>Output<a class="headerlink" href="#output" title="Permalink to this headline">¶</a></h2>
+<p>There are currently four different output modes:</p>
+<blockquote>
+<div><p>text</p>
+<blockquote>
+<div><p>This directly reads the models and materials from the COLLADA file and outputs text files.
+This outputs individual texture files and model files and a single effect and a single material
+file containing all effects and all materials. The output formats are:</p>
+<blockquote>
+<div><p><a class="reference external" href="ffteffect.html">effect file format</a></p>
+<p><a class="reference external" href="fftmaterial.html">material file format</a></p>
+<p><a class="reference external" href="ffttexture.html">texture file format</a></p>
+<p><a class="reference external" href="fftmodel.html">model file format</a></p>
+</div></blockquote>
+</div></blockquote>
+<p>texthier</p>
+<blockquote>
+<div><p>This reads the COLLADA scene hierarchy and reads the models and textures referenced by the hierarchy.
+This outputs the same files as text mode and an extra file describing the node hierarchy.</p>
+<blockquote>
+<div><a class="reference external" href="fftnode.html">node file format</a></div></blockquote>
+</div></blockquote>
+<p>binary</p>
+<blockquote>
+<div><p>This directly reads the models and materials from the COLLADA file and outputs a binary file.
+This outputs the textures models effects and materials in the one file. The output format is:</p>
+<blockquote>
+<div><a class="reference external" href="ffbinary.html">binary file format</a></div></blockquote>
+<p>And the input formats are:</p>
+<blockquote>
+<div><p><a class="reference external" href="ieffect.html">effect input</a></p>
+<p><a class="reference external" href="imaterial.html">material input</a></p>
+<p><a class="reference external" href="itexture.html">texture input</a></p>
+<p><a class="reference external" href="imodel.html">model input</a></p>
+</div></blockquote>
+</div></blockquote>
+<p>hierarchy</p>
+<blockquote>
+<div><p>This reads the COLLADA scene hierarchy and reads the models and textures referenced by the hierarchy.
+This outputs the textures models effects and materials in the one file.
+This also takes a level configuration xml file and outputs the game object hierarchy and and scenes
+defined in it to the same file.</p>
+<p>This uses the same input formats as binary plus:</p>
+<blockquote>
+<div><p><a class="reference external" href="inode.html">node input</a></p>
+<p><a class="reference external" href="level.html">level file</a></p>
+</div></blockquote>
+</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="how-it-works">
+<h2>How it works<a class="headerlink" href="#how-it-works" title="Permalink to this headline">¶</a></h2>
+<p>On load up the converter reads the file G3D.Converter.Batch.xml. This is an xml file with a root element of
+converter, it has a set of plugin elements each with a filename attribute. This attribute is an absolute or
+relative path (to the xml file) of a plugin dll. These dll&#8217;s are read and any classes in there that implement
+IConvertModule are activated and the Setup function is called on them. The setup function registers handlers
+for different parts of the export process.</p>
+<p>There are 2 things passed in on the command line, a filename and an export type. Each module has an export
+type, the converter finds a matching module and runs the StartExport function on it. It next looks for
+a file project.xml in the directory of the file passed in or one of its parents and loads that. It then
+loads the file passed in.</p>
+<p>The file loading procedure is as follows. It converts the extension of the file into a type using mappings
+registered with AddExtension (for instance .dae maps to collada). It then looks for a handler registered
+for this type, if there is one it runs this handler with the filename. If the extension is not .xml it
+also looks for a file with the same name, but with an .xml extension and whos root element matches the
+the type of the main file (in our example example: collada) and tries to load it with the configure
+handler.</p>
+<p>There are a couple of file handlers built into the main project, firstly there is the configure handler
+(extension .xml), this looks for a handler that matches configure.&lt;root element name&gt; and passes the
+root element to this handler. The other is the collada handler (extension .dae), this reads the asset
+block of the collada file then calls collada.scene with the root of the scene hierarchy.</p>
+<p>After loading these files (and any other files referenced by the process), there should be some data objects
+stored. Next it runs through each data object and finds a handler called process.&lt;data type&gt; and calls
+the handler (if it exists) with that data object. It finally calls Process on the plugin specified by
+the export type passed in to the program.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Converter</a><ul>
+<li><a class="reference internal" href="#output">Output</a></li>
+<li><a class="reference internal" href="#how-it-works">How it works</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="tier2.html"
+                        title="previous chapter">Tier 2</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="ffteffect.html"
+                        title="next chapter">effect text file format</a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="ffteffect.html" title="effect text file format"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="tier2.html" title="Tier 2"
+             >previous</a> |</li>
+        <li><a href="index.html">G3D 1.00 release 1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Philip Hodgson.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,157 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>level file &mdash; G3D 1.00 release 1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.00 release 1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="G3D 1.00 release 1 documentation" href="index.html" />
+    <link rel="next" title="Shader naming Conventions" href="naming.html" />
+    <link rel="prev" title="node input" href="inode.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="naming.html" title="Shader naming Conventions"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="inode.html" title="node input"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">G3D 1.00 release 1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="level-file">
+<h1>level file<a class="headerlink" href="#level-file" title="Permalink to this headline">¶</a></h1>
+<p>This file is used to specify the scene and game object hierarchy. It pulls in references to
+specific nodes but controls the overall orgasnisation of the level data. The root element
+is a level element.</p>
+<div class="section" id="level-section">
+<h2>level section<a class="headerlink" href="#level-section" title="Permalink to this headline">¶</a></h2>
+<p>level element has:</p>
+<div class="highlight-python"><pre>element         model           0 or 1
+    Model settings element, see `model input &lt;imodel.html&gt;`_ for details.
+element         texture         0 or 1
+    Texture settings element, see `texture input &lt;itexture.html&gt;`_ for details.
+element         node            0 or 1
+    Node settings element, see `node input &lt;inode.html&gt;`_ for details.
+element         include         0 or more
+    Include the data from a separate file, all file types are used.
+element         gameobject      0 or more
+    Start of a hierarchy of game objects.</pre>
+</div>
+<p>include element has:</p>
+<div class="highlight-python"><pre>attribute       filename        1           string
+    Absolute or relative (to the level file) path to a file to load.</pre>
+</div>
+<p>gameobject element has:</p>
+<div class="highlight-python"><pre>attribute       name            1           string
+    Name of the game object.
+attribute       parent          0 or 1      string
+    If we have this it changes the parent to point to another game object, otherwise it is the containing game object.
+attribute       inherit         0 or 1      string
+    Pull in features of this node if they are not explicitly specified, see below for details.
+element         gameobject      0 or more
+    Child elements of this game object.
+element         &lt;module&gt;        0 or more
+    Looks in the list of modules factories for &lt;module&gt; and uses the factory to create a module and calls the module
+    to process this element.</pre>
+</div>
+<p>Note: what inherit does</p>
+<p>Inherit pulls information from the node and converts that into two things. Firstly a frame module, it uses the most
+appropiate of frameIdent, framePRS or frameM. Secondly one of dummy, camera or model module, depending on what sort of
+data is attached. If you specify a frame sort of module (ie one that sets gotFrame) it does not make a frame module from
+the node. If you specify a data sort of module (ie one that sets gotData) it does not make a dummy, camera or model module
+from the node.
+Inherit also creates child game object derived from child nodes and pulls the same information from them.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">level file</a><ul>
+<li><a class="reference internal" href="#level-section">level section</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="inode.html"
+                        title="previous chapter">node input</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="naming.html"
+                        title="next chapter">Shader naming Conventions</a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="naming.html" title="Shader naming Conventions"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="inode.html" title="node input"
+             >previous</a> |</li>
+        <li><a href="index.html">G3D 1.00 release 1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Philip Hodgson.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

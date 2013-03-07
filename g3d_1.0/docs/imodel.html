@@ -1,0 +1,148 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>model input &mdash; G3D 1.00 release 1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.00 release 1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="G3D 1.00 release 1 documentation" href="index.html" />
+    <link rel="next" title="node input" href="inode.html" />
+    <link rel="prev" title="material input" href="imaterial.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="inode.html" title="node input"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="imaterial.html" title="material input"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">G3D 1.00 release 1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="model-input">
+<h1>model input<a class="headerlink" href="#model-input" title="Permalink to this headline">¶</a></h1>
+<p>A model is specified in a COLLADA file. You can modify the processing of the model by specifying models settings
+in the alongside configuration xml file, or more globally in the level xml file or in the project.xml file.</p>
+<div class="section" id="model-settings-section">
+<h2>model settings section<a class="headerlink" href="#model-settings-section" title="Permalink to this headline">¶</a></h2>
+<p>In the alongside configuration xml you can specify local settings for the model or
+in the project.xml or a level file you can specify global or level wide settings for models.</p>
+<p>model (settings) element has:</p>
+<div class="highlight-python"><pre>attribute       name            1           string
+    When in an alongside configuration xml this specifies the model to configure.
+attribute       optimise        0 or 1      bool
+    Do we apply any optimisation to the model?
+element         tolerance       0 or more
+    Tolerance values for each channel, that is how close to merge items of that channel, channels are semantic names (eg TEXCOORD2).
+element         channel         0 or more
+    configuration of an individual channel, this restricts the channels available.</pre>
+</div>
+<p>tolerance element has:</p>
+<div class="highlight-python"><pre>attribute       name            1           string
+    Name of the channel to set the tolerance on.
+attribute       value           1           float
+    Value of the tolerance, 0 means do not optimise this channel.</pre>
+</div>
+<p>channel element has:</p>
+<div class="highlight-python"><pre>attribute       name            1           string
+    Name of the channel is to be changed to.
+attribute       semantic        0 or 1      string
+    Semantic of the channel to change (eg TEXCOORD). If this is not set the name becomes the semantic and set.
+attribute       set             0 or 1      int
+    Number of the semantic set to change (eg 2 (for TEXCOORD2)).
+attribute       default         0 or 1      int
+    If set this is the default value to put in the index data.</pre>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">model input</a><ul>
+<li><a class="reference internal" href="#model-settings-section">model settings section</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="imaterial.html"
+                        title="previous chapter">material input</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="inode.html"
+                        title="next chapter">node input</a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="inode.html" title="node input"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="imaterial.html" title="material input"
+             >previous</a> |</li>
+        <li><a href="index.html">G3D 1.00 release 1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Philip Hodgson.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

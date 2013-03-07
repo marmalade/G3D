@@ -1,0 +1,113 @@
+Tier 1
+======
+
+Tier 1 is the middle layer of G3D, this contains the helper classes, particularly for loading files
+from disk. It is not essential you use any of these classes, but they are useful.
+
+Most applications will use some tier 1 classes, demos and examples will probably just use tier 0 and 1.
+However more complicated examples benefit from using tier 2 as well.
+
+There are 2 sections in tier 1: G3DHelper and G3DBinary.
+
+G3DHelper
+---------
+
+This is a set of helper classes for render loop management, loading from text files and encapsulating
+models.
+
+	CG3DApp
+
+		This encapsulates a typical render loop. You derive from this class and implement 4 functions
+		InitInternal, ShutdownInternal, UpdateInternal, and RenderInternal. The class is initialised
+		with CG3DSystem, which is stored in m_System and on initialisation, gets m_Graphics
+		(a CG3DGraphics class) by calling Init on CG3DSystem, then calls InitInternal.
+		
+		Shutdown happens when the application is quit or UpdateInternal returns false, when shutting
+		down ShutdownInternal is called. SizeChanged is called whenever the screen dimensions have changed,
+		The default SizeChanged changes the viewport dimensions.
+		On each frame RunOne is called, this gets the time elapsed since the last frame, then calls
+		Update (which calls UpdateInternal), then calls Render (which calls RenderInternal). If you
+		want to change the frequency of updates override RunOne.
+
+	CG3DEffectLib
+
+		This class loads text based effect files and makes materials and sub materials from those
+		effects. The converter can export these files in texthier mode and the file format is described
+		here: `effect file format <ffteffect.html>`_. To add a set of effects from a file call LoadText.
+		To create a material call MakeMaterial and to create a sub material call MakeSubMaterial.
+
+	CG3DMaterialLib
+
+		This class loads text based material files and text based texture files. The converter can export
+		these files in texthier mode and the file format is described here: `material file format <fftmaterial.html>`_
+		and here: `texture file format <ffttexture.html>`_.
+		To load a texture file, call LoadTexture, this returns the texture object. To load a material file
+		call LoadText and call GetMaterial to get one of the materials loaded.
+
+	CG3DPositioner
+
+		This is an encapsulation of a sub material that has a single parameter describing the world position
+		of an object. To make use of this class you need to always name your world matrix in your shaders
+		"World", if you use a different convention call the static function Setup to change this.
+		To set the world matrix on the positioner call Set, To make this matrix to be the one used the next
+		time an effect is applied call Apply.
+
+	CG3DCamera
+	
+		This is an encapsulation of a sub material that has two parameters describing the view and projection
+		matrices describing a camer. To make use of this class you need to always name your view matrix "View"
+		and your projection matrix "Proj" in your shaders, if you use a different convention call the static
+		function Setup to change this.
+		To set the view matrix on the camera call SetView, to set the projection matrix on the camer call SetProj,
+		To make these matrices to be the ones used the next time an effect is applied call Apply.
+
+	CG3DMesh
+
+		This class contains the vertex and index buffers that describe a model, but not the materials.
+		This allows us to create models that share the same mesh data, but have different material
+		values. This class contains a set of sub meshes, each sub mesh consists of one or more vertex buffers,
+		one or more index buffers an an index into a material list. Usually you have only one
+		vertex and one index buffer.
+		
+		LoadText loads from a text based model file, the converter can export these files in texthier mode and
+		the file format is described here: `model file format <fftmodel.html>`_.
+		You can also add sub meshes by calling AddSubModel with a material id, a vertex and an index buffer.
+		Another way is calling Add to add vertex and index buffers into the list then calling AddSubModel
+		with a material id and indexes into the list of added buffers.
+
+		To create a model call MakeInstance with a set of materials, this also automatically creates a single
+		CG3DPositioner for the whole model. Otherwise you could call MakeSubModels with a positioner and a
+		set of materials which fills an array of CG3DSubModels. 
+
+	CG3DSubModel
+
+		This class encapsulates a sub mesh, one material and references one positioner. This is usually created
+		by CG3DMesh. SetParameter and SetTexture are routed through to the material. Apply applies the sub mesh
+		material and positioner, ApplyMesh only applies the sub mesh, this is used in the scene code to cut down
+		on applications of materials and positioners.
+
+	CG3DModel
+
+		This is a list of sub models that share a single positioner. This is usually created by CG3DMesh.
+		SetWorld sets the positioners matrix. SetParameter and SetTexture route the parameter to one sub models
+		material or all sub models materials.
+		
+G3DBinary
+---------
+
+This section deals with loading from binary files. These files are created by running the converter in hierarchy
+mode. Each binary file contains contains a set of blocks of data that are referenced by a global string and
+a global ident. G3DBinary maintains a table of references to these blocks of data so any subsequent retrieval
+will just increment the reference of the object and return it. This means that if the same model is use
+by multiple objects they share the model.
+
+The binary loader classes are split into two, CG3DBinaryLoader, which is the main interface, and CG3DBinaryManager,
+which is the global storage of all binary data. CG3DBinaryManager is a singleton that is instantiated by
+CG3DBinaryLoader, you do not need to reference it directly. If you are using the binary loader on more than
+one thread (for instance doing background loading) then you need to set the define G3D_THREADED_LOADER in
+your mkb and create a CG3DBinaryLoader for each thread.
+
+	CG3DBinaryLoader
+
+		To add a binary file into the binary system call InitFile. To retrieve data from any of the files in the
+		binary system call GetData. The rest of the calls are related to extending the binary system.

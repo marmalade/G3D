@@ -1,0 +1,57 @@
+Converter
+=========
+
+This takes COLLADA files, image files and its own xml configuration files and converts then into
+text and binary files in formats that G3D understands. The converter runs on plugins and
+all elements of it can be extended and replaced.
+
+There are currently four different output modes:
+
+	text
+		
+		This directly reads the models and materials from the COLLADA file and outputs text files.
+		This outputs individual texture files and model files and a single effect and a single material
+		file containing all effects and all materials.
+
+			`effect file format <ffteffect.html>`_
+			`material file format <fftmaterial.html>`_
+			`texture file format <ffttexture.html>`_
+			`model file format <fftmodel.html>`_
+		
+	texthier
+	binary
+	hierarchy
+
+global:
+    configure.project
+    configure.level
+    configure.texture
+    texture .bmp .dds .gif .jpg .jpeg .png .psd .psp .tga .tif .tiff
+    process.texture
+	configure.effect
+    process.effect
+    process.model
+    configure.model
+    collada.model
+    collada.material
+    collada.texture
+    collada.node
+    configure.gameobject
+    process.gameobject
+    configure.scene
+    process.scene
+    module.model
+    module.dummy
+    module.camera
+    module. frameM
+    module.framePQS
+    module.framePRS
+    module.frameIdent
+    scene.simple
+
+text:
+	collada.scene <ColladaElementsScene>
+	write.texture <TextureTextWriter>
+	write.effect <EffectTextWriter>
+	write.model <ModelTextWriter>
+	write.material <MaterialTextWriter>

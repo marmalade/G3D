@@ -1,0 +1,21 @@
+<project>
+  <directory name="out" path="..\data"/>
+  <directory name="binary" path="..\data"/>
+  
+  <tool name="angle_dx11" filename="%S3E_DIR%\win32\angle_dx11\compiletool.exe"
+        vertex="vertex {in} output {out}" pixel="pixel {in} output {out}"
+        program="vertex {vertex} pixel {pixel} output {out}" ident="93B0"/>
+  <tool name="dx11" filename="%DXSDK_DIR%\Utilities\bin\x86\fxc.exe"
+        vertex="/T {target} /E {entry} /Fo {out} {in}"
+        pixel="/T {target} /E {entry} /Fo {out} {in}"/>
+  
+  <model optimise="true">
+    <tolerance name="NORMAL" value="0.001"/>
+  </model>
+  <texture>
+    <format depth="8" type="unsigned" layout="rgba"/>
+  </texture>
+  
+  <include filename="effects\simple.effect.xml"/>
+  <include filename="effects\plainText.effect.xml"/>
+</project>

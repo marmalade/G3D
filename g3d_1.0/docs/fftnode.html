@@ -1,0 +1,158 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>node text file format &mdash; G3D 1.00 release 1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.00 release 1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="G3D 1.00 release 1 documentation" href="index.html" />
+    <link rel="next" title="binary file format" href="ffbinary.html" />
+    <link rel="prev" title="model text file format" href="fftmodel.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="ffbinary.html" title="binary file format"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="fftmodel.html" title="model text file format"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">G3D 1.00 release 1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="node-text-file-format">
+<h1>node text file format<a class="headerlink" href="#node-text-file-format" title="Permalink to this headline">¶</a></h1>
+<p>This file has a set of nodes and the data extracted from the COLLADA file on each node.
+This file is used mainly for checking the contents of the conversion.</p>
+<blockquote>
+<div><p>node &lt;name&gt; &lt;type&gt;</p>
+<blockquote>
+<div>Start of a node. The type is one of: node, joint, camera, geometry, controller or light</div></blockquote>
+<p>lookat &lt;name&gt; &lt;eye.x&gt; &lt;eye.y&gt; &lt;eye.z&gt; &lt;lookat.x&gt; &lt;lookat.y&gt; &lt;lookat.z&gt; &lt;up.x&gt; &lt;up.y&gt; &lt;up.z&gt;</p>
+<blockquote>
+<div>Multiply the transform matrix by a look at matrix, defined by an eye position, a point to look at and the up vector.</div></blockquote>
+<p>matrix &lt;name&gt; &lt;m11&gt; &lt;m12&gt; &lt;m13&gt; &lt;m14&gt; &lt;m21&gt; &lt;m22&gt; &lt;m23&gt; &lt;m24&gt; &lt;m31&gt; &lt;m32&gt; &lt;m33&gt; &lt;m34&gt; &lt;m41&gt; &lt;m42&gt; &lt;m43&gt; &lt;m44&gt;</p>
+<blockquote>
+<div>Multiply the transform matrix by a matrix.</div></blockquote>
+<p>rotate &lt;name&gt; &lt;axis.x&gt; &lt;axis.y&gt; &lt;axis.z&gt; &lt;angle&gt;</p>
+<blockquote>
+<div>Multiply the transform matrix by a rotation matrix, defined by a rotation about the axis.</div></blockquote>
+<p>rotateX &lt;name&gt; 1 0 0 &lt;angle&gt;</p>
+<blockquote>
+<div>Multiply the transform matrix by a rotation matrix, defined by a rotation about the x axis.</div></blockquote>
+<p>rotateY &lt;name&gt; 0 1 0 &lt;angle&gt;</p>
+<blockquote>
+<div>Multiply the transform matrix by a rotation matrix, defined by a rotation about the y axis.</div></blockquote>
+<p>rotateZ &lt;name&gt; 0 0 1 &lt;angle&gt;</p>
+<blockquote>
+<div>Multiply the transform matrix by a rotation matrix, defined by a rotation about the z axis.</div></blockquote>
+<p>scale &lt;name&gt; &lt;x&gt; &lt;y&gt; &lt;z&gt;</p>
+<blockquote>
+<div>Multiply the transform matrix by a scale matrix, defined by this scale.</div></blockquote>
+<p>translate &lt;name&gt; &lt;x&gt; &lt;y&gt; &lt;z&gt;</p>
+<blockquote>
+<div>Multiply the transform matrix by a translate matrix, defined by this translation.</div></blockquote>
+<p>skew &lt;name&gt; &lt;rotaxis.x&gt; &lt;rotaxis.y&gt; &lt;rotaxis.z&gt; &lt;transaxis.x&gt; &lt;transaxis.y&gt; &lt;transaxis.z&gt; &lt;angle&gt;</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>Multiply the transform matrix by a skew matrix, defined by a rotation axis, a translation axis</dt>
+<dd>an angle.</dd>
+</dl>
+</div></blockquote>
+<p>model &lt;full name&gt;</p>
+<blockquote>
+<div>This is a global reference to a model somewhere in the data.</div></blockquote>
+<p>material &lt;full name&gt;</p>
+<blockquote>
+<div>This is a global reference to a material somewhere in the data.</div></blockquote>
+<p>camera true|false &lt;x&gt; &lt;y&gt; &lt;aspect&gt; &lt;nearz&gt; &lt;farz&gt;</p>
+<blockquote>
+<div>Define the projection matrix of the camera, if the first parameter is true it is a orthographic projection
+matrix, otherwise a perspective.</div></blockquote>
+<p>child &lt;full name&gt;</p>
+<blockquote>
+<div>This defines that a node somewhere in the data is a child of this node.</div></blockquote>
+</div></blockquote>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="fftmodel.html"
+                        title="previous chapter">model text file format</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="ffbinary.html"
+                        title="next chapter">binary file format</a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="ffbinary.html" title="binary file format"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="fftmodel.html" title="model text file format"
+             >previous</a> |</li>
+        <li><a href="index.html">G3D 1.00 release 1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Philip Hodgson.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

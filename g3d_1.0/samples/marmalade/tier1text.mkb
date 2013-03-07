@@ -1,0 +1,13 @@
+#!/usr/bin/env mkb
+
+files
+{
+    tier1text.cpp
+}
+
+define G3D_USE_IWGL
+
+subprojects
+{
+    ../../src/g3d
+}

@@ -1,0 +1,160 @@
+Tutorial 2: Your first G3D Application
+======================================
+
+This tutorial will take you through creating your first G3D application.
+We will make use of the data we created in tutorial 1 (or you can use
+data from one of the examples).
+
+1) Making the project
+~~~~~~~~~~~~~~~~~~~~~
+
+Go to the root directory that we created in tutorial 1 (that is the directory
+containing the data and data-source directories), if you did not follow
+tutorial 1, make a blank directory. In this directory create 2 blank files,
+tutorial.mkb and tutorial.cpp
+
+In tutorial.mkb add these lines::
+
+	file tutorial.cpp
+	subproject ../../src/g3d
+
+This creates a Marmalade project, which contains one file, tutorial.cpp and
+pulls in the g3d subproject. You will probably need to adjust the subproject
+path to reflect your file hierarchy.
+
+Now run this mkb.
+
+2) First G3D Program
+~~~~~~~~~~~~~~~~~~~~
+
+Now in tutorial.cpp we include some headers::
+
+	#include "G3DCore.h"
+	#include "G3DMarmalade.h"
+	#include "G3DHelper.h"
+
+These load the headers for some of the different sections of G3D. We are loading G3DCore,
+which is the interfaces to the graphics and system sections; G3DMarmalade,
+which is an implementation of the system section; and G3DHelper, which is a set of
+helper classes, including encapsulating the main loop. These headers and headers for
+other G3D sections are in h directory of the g3d source.
+
+Next we create our application class::
+
+	class CGame : public CG3DApp
+	{
+	public:
+		CGame() : CG3DApp(MakeG3DSystemMarmalade()) {}
+	protected:
+		virtual void InitInternal() { }
+		virtual bool UpdateInternal(float timeStep) { return true; }
+		virtual void RenderInternal(float timeStep) { }
+		virtual void ShutdownInternal() { }
+	};
+
+This derives our application class from the G3DHelper class CG3DApp.
+Firstly we initialise CG3DApp with an implementation of the system
+section, this is an interface between Marmalade and G3D. Next we
+implement four functions. InitInternal gets called first, then on
+each frame, UpdateInternal and RenderInternal get called, then
+ShutdownInternal gets called when the app gets shut down, this
+happens due to external events, or if UpdateInternal returns false.
+
+Next we need a main function::
+
+	int main()
+	{
+		CGame game;
+		game.Run();
+	}
+
+This creates a standard main function, which creates our application
+class and run's it.
+
+Now we need to set up some global state, in the InitInternal function add::
+
+	m_Graphics->SetGlobalSet(CG3DGlobalSet::COLOUR, new CG3DColourSet(CG3DColour(0, 255, 0)));
+	m_Graphics->SetGlobalSet(CG3DGlobalSet::DEPTH, new CG3DDepthSet(1));
+	m_Graphics->SetGlobalSet(CG3DGlobalSet::CULL, new CG3DCullSet(CG3DCullSet::CULL_BACK));
+
+Each of these GlobalSets, sets a few global state variables. The main variable is passed
+to the constructor, the others set on the class.
+ColourSet deals with clearing the colour buffer and masking colour output.
+DepthSet deals with writing to the depth buffer and masking depth output.
+CullSet deals with culling front and or back faces of polygons.
+GlobalSet.h in the core/h directory of the g3d source, gives more details
+of these sets and the others.
+
+We can now run this, our very first g3d application, but all we will see is a green screen.
+
+3) Adding data
+~~~~~~~~~~~~~~
+
+If you have followed along with the first tutorial you should have a g3d
+file in the data directory. If not copy tut.g3d from samples/tutorial/data.
+
+We need to add these headers::
+
+	#include "G3DBinary.h"
+	#include "G3DHierarchy.h"
+
+These load the headers for the binary reader section and the hierarchy section.
+
+Now add this code into your InitInternal function::
+
+	CG3DPtr<CG3DBinaryLoader> binary = new CG3DBinaryLoader(m_Graphics.get());
+	binary->InitFile("test.g3d");
+
+This creates a binary loader and loads your g3d file's data table,
+change the name if it is different. CG3DPtr is a smart pointer that
+automatically calls AddRef and Release on the item it contains,
+if you need a C pointer call get() on it.
+
+Now we need to load some data from the file. first add these fields
+on the class::
+
+	private:
+		CG3DPtr<CG3DGameObject> m_Hier;
+		CG3DPtr<CG3DScene> m_Scene;
+
+These point to the game object hierarchy and the scene to draw.
+
+We need to load these from the file, add this into the InitInternal
+function::
+
+	m_Scene = binary->GetData<CG3DScene>("test.testScene");
+	m_Hier = binary->GetData<CG3DGameObject>("test.root");
+
+This loads the scene and the game object hierarchy, you will
+probably have to adjust your names, look for your scene
+and the top level gameobject in your level file and prefix
+with the name given to the file. If you did not specify a scene
+it will be called scene. If you copied tut.g3d, the names are
+test.testScene and test.root.
+
+Add this to your InitInternal function::
+
+	m_Scene->Upload();
+
+This uploads all the graphics data in the scene (The model module
+adds its models to the scene on activation) to the graphics device.
+
+Add this to your UpdateInternal function::
+
+	m_Hier->DoFrame(timeStep);
+
+This dispatches any pending events on the game objects and sends
+the update event to each game object. timeStep is the amount of
+time elapsed since DoFrame was last called.
+
+And finally this to your RenderInternal function::
+
+	m_Scene->Apply();
+
+This draws all the objects in the scene.
+
+That is it, run your app you should now be drawing a model on screen.
+
+If this does not look very good try adding a framePRS to the test
+game object in your level file to adjust the models position, or adjust the
+cameras position and perspective matrix.

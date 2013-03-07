@@ -1,0 +1,50 @@
+level file
+==========
+
+This file is used to specify the scene and game object hierarchy. It pulls in references to
+specific nodes but controls the overall orgasnisation of the level data. The root element
+is a level element.
+
+level section
+-------------
+
+level element has::
+
+	element			model			0 or 1
+		Model settings element, see `model input <imodel.html>`_ for details.
+	element			texture			0 or 1
+		Texture settings element, see `texture input <itexture.html>`_ for details.
+	element			node			0 or 1
+		Node settings element, see `node input <inode.html>`_ for details.
+	element			include			0 or more
+		Include the data from a separate file, all file types are used.
+	element			gameobject		0 or more
+		Start of a hierarchy of game objects.
+
+include element has::
+
+    attribute		filename		1			string
+		Absolute or relative (to the level file) path to a file to load.
+
+gameobject element has::
+
+    attribute		name			1			string
+		Name of the game object.
+    attribute		parent			0 or 1		string
+		If we have this it changes the parent to point to another game object, otherwise it is the containing game object.
+	attribute		inherit			0 or 1		string
+		Pull in features of this node if they are not explicitly specified, see below for details.
+	element			gameobject		0 or more
+		Child elements of this game object.
+	element			<module>		0 or more
+		Looks in the list of modules factories for <module> and uses the factory to create a module and calls the module
+		to process this element.
+
+Note: what inherit does
+
+Inherit pulls information from the node and converts that into two things. Firstly a frame module, it uses the most
+appropiate of frameIdent, framePRS or frameM. Secondly one of dummy, camera or model module, depending on what sort of
+data is attached. If you specify a frame sort of module (ie one that sets gotFrame) it does not make a frame module from
+the node. If you specify a data sort of module (ie one that sets gotData) it does not make a dummy, camera or model module
+from the node.
+Inherit also creates child game object derived from child nodes and pulls the same information from them.

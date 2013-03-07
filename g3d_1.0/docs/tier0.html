@@ -1,0 +1,356 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Tier 0 &mdash; G3D 1.00 release 1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.00 release 1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="G3D 1.00 release 1 documentation" href="index.html" />
+    <link rel="next" title="Tier 1" href="tier1.html" />
+    <link rel="prev" title="Tutorial 3: Adding a custom module" href="tutorial3.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="tier1.html" title="Tier 1"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="tutorial3.html" title="Tutorial 3: Adding a custom module"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">G3D 1.00 release 1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="tier-0">
+<h1>Tier 0<a class="headerlink" href="#tier-0" title="Permalink to this headline">¶</a></h1>
+<p>Tier 0 is the lowest level of G3D, this contains the core classes, the abstract interfaces to
+the system and graphics sections, the platform implementations of system and graphics and
+the maths library.</p>
+<p>Most applications will not use tier 0 exclusively, unless you are integrating G3D into an existing
+engine, but you will use some of the functionality and the other tiers sit on top of tier 0.</p>
+<p>There are 4 sections in tier 0: G3DMaths, G3DCore, G3DGLES and G3DMarmalade.</p>
+<div class="section" id="g3dmaths">
+<h2>G3DMaths<a class="headerlink" href="#g3dmaths" title="Permalink to this headline">¶</a></h2>
+<p>This is maths library containing all the essential 3D maths classes, used by G3D.
+The library is loosely based on the XNA maths library.</p>
+<blockquote>
+<div><p>CG3DVector2, CG3DVector3, CG3DVector4</p>
+<blockquote>
+<div>These are 2D, 3D and 4D (or homogenous) vectors.</div></blockquote>
+<p>CG3DMatrix</p>
+<blockquote>
+<div>This is a 4x4 matrix.</div></blockquote>
+<p>CG3DQuaternion</p>
+<blockquote>
+<div>This is a quaternion, it is an alternative way of representing rotations in 3D
+that is more efficient in certain types of calculation.</div></blockquote>
+<p>CG3DColour</p>
+<blockquote>
+<div>This represents colour as 4 bytes (r, g, b and a). It can convert to and from
+CG3DVector4.</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="g3dcore-core-classes">
+<h2>G3DCore - core classes<a class="headerlink" href="#g3dcore-core-classes" title="Permalink to this headline">¶</a></h2>
+<p>This is the core classes, the abstract interfaces to the system and graphics sections.</p>
+<blockquote>
+<div><p>CG3DBase</p>
+<blockquote>
+<div>This is the base class for nearly all G3D classes. You cannot call delete on this
+class, instead call Release. This allows us to implement reference counting or
+cope with deleting data from an extension (which may be on a separate heap).</div></blockquote>
+<p>CG3DRefCount</p>
+<blockquote>
+<div>This is used as the base class for the majority of classes, it is derived from CG3DBase.
+This maintains a reference count, call AddRef to increment it and Release to decrement,
+Release deletes the class if your reference count falls to 0.</div></blockquote>
+<p>CG3DPtr</p>
+<blockquote>
+<div>This is a smart pointer to a CG3DRefCount derived class. When its value is set it calls
+AddRef, when it changed or goes out of scope it calls Release. call get to get a C pointer
+to its contents.</div></blockquote>
+<p>CG3DResource</p>
+<blockquote>
+<div><p>This is used as a base class for graphics resources and containers of graphics resources.
+Derived classes have functions to add data to this class, you then call:</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>Upload</dt>
+<dd>to move this data to the GPU for the first time.</dd>
+<dt>Reload</dt>
+<dd>to update the data on the GPU.</dd>
+<dt>Unload</dt>
+<dd>to remove the data from the GPU.</dd>
+<dt>Apply</dt>
+<dd>to set the data as current on the GPU, or to draw it.</dd>
+</dl>
+</div></blockquote>
+<p>It also has flags, these are hints to the GPU. Upload normally removes the data from
+memory, but if you set the DYNAMIC flag, this does not happen.</p>
+</div></blockquote>
+<p>CG3DResourceList</p>
+<blockquote>
+<div>This is a class derived from CG3DResource that contains a list of resources. This applies
+its state to its children, so when you call Upload, it calls Upload on all its children,
+and so on. Call Add to add a child and Remove to remove one.</div></blockquote>
+<p>CG3DBuffer</p>
+<blockquote>
+<div>This is a class derived from CG3DResource, it has a buffer of arbitrary data.
+Call CreateBuffer to allocate the buffer, you can then copy into the returned pointer,
+call Add to append data, or Set to set data at an offset.</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="g3dcore-system-interface">
+<h2>G3DCore - system interface<a class="headerlink" href="#g3dcore-system-interface" title="Permalink to this headline">¶</a></h2>
+<p>This is the abstract interface to the system section. The system section exposes a small subset
+of the underlying systems functionality. This functionality is used by the rest of G3D.
+This is abtracted so we can use G3D on other systems, generally you do not have to do the same.</p>
+<blockquote>
+<div><p>CG3DSystem</p>
+<blockquote>
+<div><p>This is the main abstract interface to the system.</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>Init</dt>
+<dd>This initialises the system, the implementation of system is responsible for
+deciding what graphic system to use, so this function returns the implementation
+of the graphics system.</dd>
+<dt>MakeMutex</dt>
+<dd>This makes a mutex class that restricts access to a resource to one thread.</dd>
+<dt>GetSize</dt>
+<dd>This returns the current screen dimensions.</dd>
+<dt>GetTime</dt>
+<dd>This returns the current time.</dd>
+<dt>Update</dt>
+<dd>This updates parts of the system that need a tick update.</dd>
+<dt>EndRender</dt>
+<dd>This swaps the screen buffer, to signal the end of drawing a frame.</dd>
+<dt>Trace</dt>
+<dd>This outputs to the log.</dd>
+<dt>Error</dt>
+<dd>This displays a message in a dialog box.</dd>
+<dt>GetInterface</dt>
+<dd>This is a static function to get the current system.</dd>
+</dl>
+</div></blockquote>
+</div></blockquote>
+</div></blockquote>
+<p>We also have some ASSERT macros G3D_ASSERT_EXPR, G3D_ASSERT_RET, G3D_ASSERT_RETC, G3D_ASSERT_RETF, G3D_ASSERT_RETFC
+G3D_ASSERT_RETN, G3D_ASSERT_RETNC. We call them like this:</p>
+<div class="highlight-python"><pre>G3D_ASSERT_EXPR(&lt;bool expr&gt;, ("&lt;message&gt;", &lt;params&gt;));</pre>
+</div>
+<p>for instance:</p>
+<div class="highlight-python"><pre>G3D_ASSERT_EXPR(x == "hello", ("x should equal hello not %s", x.c_str());</pre>
+</div>
+<p>The RET versions return when the expression is false, RETF returns false, RETN returns NULL.
+The C versions specify a bit of code to call before returning.</p>
+</div>
+<div class="section" id="g3dcore-graphics-interface">
+<h2>G3DCore - graphics interface<a class="headerlink" href="#g3dcore-graphics-interface" title="Permalink to this headline">¶</a></h2>
+<p>This is the abstract interface to the graphics system. This covers the majority of the
+graphics system. The system is abstracted so we can use different graphics systems
+depending in the device we are running on.</p>
+<blockquote>
+<div><p>CG3DGraphics</p>
+<blockquote>
+<div><p>This class has two main uses, firstly to make the implementaions of the
+graphics classes, and secondly to set global graphics state. It also clears
+the current screen. The Init function is called by the system section, do not
+call it yourself.</p>
+<p>Global graphics state is split into 10 sets. Each set has a few bits of the
+global state. CG3DGraphics has a stack for each Set. PushGlobalSet pushes
+a set onto the stack, PopGlobalSet, pops it, SetGlobalSet, pops the current
+set and pushes a new set, and ApplyGlobalSet re-applies the current set.
+See g3dcorehGlobalSet.h for details.</p>
+</div></blockquote>
+<p>CG3DVertexBuffer</p>
+<blockquote>
+<div>This class encapsulates a vertex buffer, it is derived from CG3DBuffer.
+To create a vertex buffer, call MakeVertexBuffer on the graphics class.
+Call AddElement for each channel of your vertex data to describe the format
+of the vertex buffer. Call the usual buffer functions to set the data on
+the vertex buffer. Finally, you need to call PatchUp with a material or effect
+before you can use the vertex buffer, this sets up the association of
+channels to attributes in your shader.</div></blockquote>
+<p>CG3DIndexBuffer</p>
+<blockquote>
+<div>This class encapsulates an index buffer, it is derived from CG3DBuffer.
+To create an index buffer, call MakeIndexBuffer on the graphics class.
+Call Setup to set the type of the index buffer and the size of an index.
+Call the usual buffer functions to set the data on the index buffer.</div></blockquote>
+<p>CG3DShader</p>
+<blockquote>
+<div>This class encapsulates a vertex or pixel shader. It is derived from CG3DResource.
+Shaders are created by calling MakeShader on an effect, this also adds them to the effect.
+Shaders can be added as source or binary, most devices support source, some also support
+binary (of which there are competing formats), a few support only binary.
+To set the shader with source call SetSource with the type and source string.
+To set the shader with binary call MakeBinaryBuffer with the type, length and format,
+this returns a buffer to copy the binary data into. The format is a GLES binary format
+indicator, you can also use ValidFormat to enquire if the format is supported.</div></blockquote>
+<p>CG3DEffect</p>
+<blockquote>
+<div><p>This class encapsulates an effect, that is a combination of shaders and parameters
+on those shaders that specifies a technique for drawing polygons. An effect is the
+equivalent of a class, it has code and variables, whereas CG3DMaterial is the equivalent
+of an instance of a class. CG3DEffect is derived from CG3DResourceList.</p>
+<p>To Make an Effect call MakeEffect on CG3DEffect. To make a shader call MakeShader on this class.
+To make a material call MakeMaterial, this makes a material tied to this affect.
+MakeSubMaterial is like MakeMaterial, except the material is treated as an extra partial
+material (that is setting only a few of the parameters), and not applying the effect.
+This is usually used for parameters that are used across a range of shaders, like world,
+view and projection matrices; you specify the view and projection matrices per scene, the
+world matrix per model and the main material per sub model. The bufferName parameter is ignored
+for glsl shaders.</p>
+<p>SetProgramBinary specifies a program binary (that is a blob containing a set of shader binaries)
+of a particular format, (you can check the format is supported by calling ValidProgramFormat).
+AddParameter and AddTexture add parameter definitions, these must match attributes in the shaders,
+but may have different formats, so long as they are convertable.</p>
+</div></blockquote>
+<p>CG3DMaterial</p>
+<blockquote>
+<div><p>This class encapsulates a material, this is the concrete parameters of an effect. This specifies
+the look of a polygon.  CG3DMaterial is derived from CG3DResourceList.
+To make a material call MakeMaterial or MakeSubMaterial on CG3DEffect.
+SetParameter and SetTexture, set the data for a parameter specified on the effect.</p>
+<p>AddSet and RemoveSet add or remove global state sets that will be applied whilst this material is
+in effect. That is between calls to Apply (which pushes the global state and sets the material)
+and DoneApply (which pops the global state).</p>
+</div></blockquote>
+<p>CG3DTexture</p>
+<blockquote>
+<div><p>This class encapsulates a texture and its state. A texture is a collection of images. 2D textures
+have different images for each mip level. Cube textures have different images for each face and
+mip level. CG3DTexture is derived from CG3DResource. Textures are made by calling MakeTexture on
+CG3DGraphics.</p>
+<p>Setup sets the state of the texture, that is whether it is a cube of 2D texture, its filter type,
+its wrapping in S and T and do we generate mip maps.
+AddImage creates an image that is in particular dimensions, format and type, it returns a buffer
+to be filled with the image data.
+ValidFormat tests if an image format is valid.</p>
+</div></blockquote>
+<p>CG3DRenderTo</p>
+<blockquote>
+<div><p>This specifies an offscreen surface that can be rendered to. CG3DRenderTo is derived from CG3DResourceList.
+Call MakeRenderTo on GG3DGraphics to create a CG3DRenderTo.</p>
+<p>CG3DRenderTo has 3 channels COLOUR, DEPTH and STENCIL. Not all channels need to be created. SetBuffer creates
+an internal buffer of a particular size and format on a channel. SetTexture sets the image of a texture on a
+channel. As far as CG3DRenderTo is concerned, both do the same thing, but SetTexture allows the data to be
+referenced outside of CG3DRenderTo. To set the CG3DRenderTo as the current render target, call Apply. Call
+DoneApply to revert to the previous render target.</p>
+<p>AddSet and RemoveSet add or remove global state sets that will be applied whilst this is the current render
+target.</p>
+</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="g3dgles">
+<h2>G3DGLES<a class="headerlink" href="#g3dgles" title="Permalink to this headline">¶</a></h2>
+<p>This is the implementation of the graphics section for OpenGL ES 2.0. It has one function MakeG3DGraphicsGLES, but this
+is called from G3DMarmalade, so you don&#8217;t have to worry about this.</p>
+<p>There is a define G3D_USE_IWGL that can be applied in your MKB file. This makes G3DGLES use IwGL, rather then s3eGL
+directly. IwGL is slower, but deals with suspend / resume for you.</p>
+</div>
+<div class="section" id="g3dmarmalade">
+<h2>G3DMarmalade<a class="headerlink" href="#g3dmarmalade" title="Permalink to this headline">¶</a></h2>
+<p>This is the implementation of the system section for Marmalade. It has one function MakeG3DSystemMarmalade. This returns
+a CG3DSystem class, once you have got this class you should call the Init function, this will return an implementation
+of the CG3DGraphics class.</p>
+<p>The function has an optional parameter CG3DSystemConfigIW, this configures the graphics surface used. The m_ViewFormat and
+m_DepthFormat fields configure the view and depth formats used to create the display. However if you use G3D_USE_IWGL these
+are ignored. The m_GLOnly field is not implemented yet.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Tier 0</a><ul>
+<li><a class="reference internal" href="#g3dmaths">G3DMaths</a></li>
+<li><a class="reference internal" href="#g3dcore-core-classes">G3DCore - core classes</a></li>
+<li><a class="reference internal" href="#g3dcore-system-interface">G3DCore - system interface</a></li>
+<li><a class="reference internal" href="#g3dcore-graphics-interface">G3DCore - graphics interface</a></li>
+<li><a class="reference internal" href="#g3dgles">G3DGLES</a></li>
+<li><a class="reference internal" href="#g3dmarmalade">G3DMarmalade</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="tutorial3.html"
+                        title="previous chapter">Tutorial 3: Adding a custom module</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="tier1.html"
+                        title="next chapter">Tier 1</a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="tier1.html" title="Tier 1"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="tutorial3.html" title="Tutorial 3: Adding a custom module"
+             >previous</a> |</li>
+        <li><a href="index.html">G3D 1.00 release 1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Philip Hodgson.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

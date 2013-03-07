@@ -1,0 +1,16 @@
+<level name="test">
+  <scene name="testScene" type="simple"/>
+  <include filename="tut.dae"/>
+  <gameobject name="root">
+    <gameobject name="camera">
+      <framePRS pos="0 -0.5 -3" rot="0 0 0"/>
+      <camera scene="test.testScene">
+        <perspective fov="1.57" aspect="0.75" nearz="0.01" farz="100"/>
+      </camera>
+    </gameobject>
+    <gameobject name="test" inherit="tut.tut.cube">
+      <framePRS pos="0 0 0" rot="0 0.5 0.3"/>
+      <control speed="-1"/>
+    </gameobject>
+  </gameobject>
+</level>

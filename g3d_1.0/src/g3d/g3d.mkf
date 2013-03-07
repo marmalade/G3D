@@ -1,0 +1,181 @@
+includepath
+{
+	.
+    h
+	core/h
+	common/h
+	gles/h
+	helper/h
+	maths/h
+	marmalade/h
+	binary/h
+	hierarchy/h
+	2d/h
+}
+
+debug_define G3D_DEBUG
+
+files
+{
+    [H]
+	(h)
+	G3DMaths.h     #vector and matrix mathematics
+	G3DCore.h      #core interfaces
+	G3DGLES.h      #interface to the graphics chip using openGL ES 2.0
+	G3DMarmalade.h #interface to the system using Marmalade
+	G3DHelper.h    #optional convienience classes
+	G3DBinary.h    #optional binary loading classes
+	G3DHierarchy.h #optional hierarchy classes
+	G3D2D.h        #optional 2d classes
+	
+	[Core/H]
+	(core/h)
+	Base.h
+	Graphics.h
+	System.h
+	Resource.h
+	ResourceList.h
+	Buffer.h
+	VertexBuffer.h
+	IndexBuffer.h
+	Texture.h
+	Shader.h
+	Effect.h
+	Material.h
+	GlobalSet.h
+	RenderTo.h
+	Mutex.h
+	
+	[Core/Source]
+	(core/source)
+	Resource.cpp
+	System.cpp
+	
+	[Common]
+	(common/h)
+	GraphicsCommon.h
+	BufferCommon.h
+	(common/source)
+	GraphicsCommon.cpp
+	BufferCommon.cpp
+	
+	[GLES/H]
+	(gles/h)
+	GraphicsGL.h
+	VertexBufferGL.h
+	IndexBufferGL.h
+	TextureGL.h
+	RenderToGL.h
+	ShaderGL.h
+	EffectGL.h
+	MaterialGL.h
+
+	[GLES/Source]
+	(gles/source)
+	GraphicsGL.cpp
+	VertexBufferGL.cpp
+	IndexBufferGL.cpp
+	TextureGL.cpp
+	RenderToGL.cpp
+	ShaderGL.cpp
+	EffectGL.cpp
+	MaterialGL.cpp
+
+	[Marmalade]
+	(marmalade/h)
+	SystemIW.h
+	(marmalade/source)
+	SystemIW.cpp
+	GLIW.cpp
+	
+	[Maths]
+	(maths/h)
+	Maths.h
+	Colour.h
+	Vector4.h
+	Vector3.h
+	Vector2.h
+	Quaternion.h
+	Matrix.h
+	Matrix33.h
+	(maths/source)
+	Colour.cpp
+	Vector4.cpp
+	Vector3.cpp
+	Vector2.cpp
+	Quaternion.cpp
+	Matrix.cpp
+	Matrix33.cpp
+	
+	[Helper/H]
+	(helper/h)
+	App.h
+	Model.h
+	SubModel.h
+	Mesh.h
+	EffectLib.h
+	MaterialLib.h
+	Positioner.h
+	
+	[Helper/Source]
+	(helper/source)
+	App.cpp
+	Model.cpp
+	Mesh.cpp
+	SubModel.cpp
+	EffectLib.cpp
+	MaterialLib.cpp
+	Positioner.cpp
+
+	[Binary]
+	(binary/h)
+	Binary.h
+	Loaders.h
+	(binary/source)
+	Binary.cpp
+	Loaders.cpp
+	
+	[Hierarchy/H]
+	(hierarchy/h)
+	Util.h
+	Event.h
+	Module.h
+	UpdateModule.h
+	FrameModule.h
+	ModelModule.h
+	DummyModule.h
+	CameraModule.h
+	GameObject.h
+	Scene.h
+
+	[Hierarchy/Source]
+	(hierarchy/source)
+	Util.cpp
+	Module.cpp
+	FrameModule.cpp
+	ModelModule.cpp
+	CameraModule.cpp
+	DummyModule.cpp
+	GameObject.cpp
+	Scene.cpp
+
+	[2D]
+	(2d/h)
+	2dobject.h
+	(2d/source)
+	2dobject.cpp
+
+	[Docs]
+	(docs)
+	g3d.defines.txt
+}
+
+if {{ defined G3D_USE_IWGL }}
+{
+	subproject iwgl
+}
+
+if {{ defined G3D_USE_EXTENSION }}
+{
+	subproject ../../src/g3d/extension/s3eG3D
+}

@@ -1,0 +1,93 @@
+Converter
+=========
+
+This takes COLLADA files, image files and its own xml configuration files and converts then into
+text and binary files in formats that G3D understands. The converter runs on plugins and
+all elements of it can be extended and replaced.
+
+Output
+------
+
+There are currently four different output modes:
+
+	text
+		
+		This directly reads the models and materials from the COLLADA file and outputs text files.
+		This outputs individual texture files and model files and a single effect and a single material
+		file containing all effects and all materials. The output formats are:
+
+			`effect file format <ffteffect.html>`_
+
+			`material file format <fftmaterial.html>`_
+
+			`texture file format <ffttexture.html>`_
+
+			`model file format <fftmodel.html>`_
+		
+	texthier
+
+		This reads the COLLADA scene hierarchy and reads the models and textures referenced by the hierarchy.
+		This outputs the same files as text mode and an extra file describing the node hierarchy.
+
+			`node file format <fftnode.html>`_
+
+	binary
+		
+		This directly reads the models and materials from the COLLADA file and outputs a binary file.
+		This outputs the textures models effects and materials in the one file. The output format is:
+
+			`binary file format <ffbinary.html>`_
+
+		And the input formats are:
+			
+			`effect input <ieffect.html>`_
+			
+			`material input <imaterial.html>`_
+
+			`texture input <itexture.html>`_
+
+			`model input <imodel.html>`_
+
+	hierarchy
+
+		This reads the COLLADA scene hierarchy and reads the models and textures referenced by the hierarchy.
+		This outputs the textures models effects and materials in the one file.
+		This also takes a level configuration xml file and outputs the game object hierarchy and and scenes
+		defined in it to the same file.
+
+		This uses the same input formats as binary plus:
+			
+			`node input <inode.html>`_
+			
+			`level file <level.html>`_
+
+How it works
+------------
+
+On load up the converter reads the file G3D.Converter.Batch.xml. This is an xml file with a root element of
+converter, it has a set of plugin elements each with a filename attribute. This attribute is an absolute or
+relative path (to the xml file) of a plugin dll. These dll's are read and any classes in there that implement
+IConvertModule are activated and the Setup function is called on them. The setup function registers handlers
+for different parts of the export process.
+
+There are 2 things passed in on the command line, a filename and an export type. Each module has an export
+type, the converter finds a matching module and runs the StartExport function on it. It next looks for
+a file project.xml in the directory of the file passed in or one of its parents and loads that. It then
+loads the file passed in.
+
+The file loading procedure is as follows. It converts the extension of the file into a type using mappings
+registered with AddExtension (for instance .dae maps to collada). It then looks for a handler registered
+for this type, if there is one it runs this handler with the filename. If the extension is not .xml it
+also looks for a file with the same name, but with an .xml extension and whos root element matches the
+the type of the main file (in our example example: collada) and tries to load it with the configure
+handler.
+
+There are a couple of file handlers built into the main project, firstly there is the configure handler
+(extension .xml), this looks for a handler that matches configure.<root element name> and passes the
+root element to this handler. The other is the collada handler (extension .dae), this reads the asset
+block of the collada file then calls collada.scene with the root of the scene hierarchy.
+
+After loading these files (and any other files referenced by the process), there should be some data objects
+stored. Next it runs through each data object and finds a handler called process.<data type> and calls
+the handler (if it exists) with that data object. It finally calls Process on the plugin specified by
+the export type passed in to the program.

@@ -1,0 +1,33 @@
+node eva.eva node
+child eva.eva.persp
+child eva.eva.top
+child eva.eva.front
+child eva.eva.side
+child eva.eva.combatEva
+
+node eva.eva.persp camera
+translate translate {X:-0.00941338 Y:0.7583849 Z:1.310862}
+rotateY rotateY {X:0 Y:1 Z:0} -6.286676
+rotateX rotateX {X:1 Y:0 Z:0} -0.2677047
+camera False 0 37.84928 1.5 0.000999987 10000
+
+node eva.eva.top camera
+translate translate {X:-0.001223308 Y:100.1006 Z:-0.02238902}
+rotateX rotateX {X:1 Y:0 Z:0} -1.570796
+camera True 56.259 0 1.5 0.000999987 10000
+
+node eva.eva.front camera
+translate translate {X:-0.001223308 Y:0.4287115 Z:100.1043}
+camera True 65.74372 0 1.5 0.000999987 10000
+
+node eva.eva.side camera
+translate translate {X:100.1364 Y:0.4287115 Z:-0.02238902}
+rotateY rotateY {X:0 Y:1 Z:0} 1.570796
+camera True 64.31169 0 1.5 0.000999987 100000
+
+node eva.eva.combatEva geometry
+model eva.combatEvaShape
+material eva.face_simple
+material eva.body_simple
+material eva.hair_simple
+

@@ -1,0 +1,11 @@
+#!/usr/bin/env mkb
+
+files
+{
+    tier1bin.cpp
+}
+
+#define G3D_USE_IWGL
+#define G3D_USE_EXTENSION
+
+subproject ../../src/g3d

@@ -1,0 +1,70 @@
+binary file format
+==================
+
+The file is split into a number of sections each has a header like this::
+	
+	byte[4] ident	//FOURCC style identifier (eg G3DW)
+	uint	size	//size of the section incuding header
+
+The file is organised hierarchically (a section can contain other sections).
+
+	G3DW
+
+		This is the root section, this contains all the other sections and has
+		a header like this::
+
+			ushort version	//version number of the file format (currently 0)
+			ushort num		//number of tables
+			uint tables		//absolute offset to the start of the tables (ident TABL)
+			uint string		//absolute offset to the import strings section (ident IMPT)
+			uint reloc		//absolute offset to the relocation section (ident RELC)
+
+		After this the various data sections are stored, followed by the tables,
+		string and reloc sections.
+
+	TABL
+
+		This is a table of entries that point to data sections. There may be several of them
+		in the file, as each can contain a maximum of 65536 entries. Each table has a header::
+
+			ushort ident	//unique identifier of this table or 0
+			ushort num		//number of entries
+			uint flags		//GenerateID = 1, Patch = 2, HasStrings = 4
+
+		If GenerateID is set, on load up an ident is generated. If Patch is set this patches an existing
+		table. If HsStrings is set, the table is followed by a string section.
+		Following this are num entries, the format of each entry is::
+
+			uint offset		//absolute offset to the start of the data section
+
+		This is followed by an optional string section, this has a header with the number of strings (uint) and
+		a set of 0 terminated strings, which are the names for each table entry.
+
+	IMPT
+
+		This is an optional section, it has a header with the number of strings (uint) then a set of 0 terminated strings.
+		Refer to the note about references below to see how this is used.
+
+	RELC
+
+		This is an optional section, it has a header with the number of entries (uint) then a set of absolute offsets to
+		each reference to another data section (uint), this is used during the 'link' process.
+
+Note: references
+----------------
+
+There are two ways of doing references.
+
+	1) a uint offset into the import strings table. So we go from the reference to the name, we look this name up in
+	the strings provided by the tables to get a table and entry ident::
+
+		ushort table
+		ushort entry
+
+	This finds the appropiate table and entry and then section.
+
+	2) a table and entry ident, this finds the appropiate table and entry and then section.
+
+The 'link' process uses the reloc section to convert all type 1 references into type 2. This gets rid of the import string
+and reloc sections. If the import string section is present, it assumes we are using type 1. Currently the 'link' process
+is not implemented.

@@ -1,0 +1,231 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Tier 2 &mdash; G3D 1.00 release 1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.00 release 1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="G3D 1.00 release 1 documentation" href="index.html" />
+    <link rel="next" title="Converter" href="converter.html" />
+    <link rel="prev" title="Tier 1" href="tier1.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="converter.html" title="Converter"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="tier1.html" title="Tier 1"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">G3D 1.00 release 1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="tier-2">
+<h1>Tier 2<a class="headerlink" href="#tier-2" title="Permalink to this headline">¶</a></h1>
+<p>Tier 2 is the top layer of G3D, this contains the game object hierarchy and scene management classes.</p>
+<p>Complex applications will use tier 2 or have there own system that does a similar job. Tier 2 is not
+the only way to approach this problem, but it is designed to be as generic as possible.</p>
+<p>There is currently 1 section in tier 2: G3DHierarchy.</p>
+<div class="section" id="g3dhierarchy-generic">
+<h2>G3DHierarchy - Generic<a class="headerlink" href="#g3dhierarchy-generic" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><p>CG3DGameObject</p>
+<blockquote>
+<div><p>This is a generic container for 3D objects, that is part of a hierarchy.
+It contains a set of modules that contain the code and data for the game object, the game object
+is just a framework that the modules sit in. A game object has a world matrix, a pointer to its
+parent, a list of children, a set of modules, a set of event handlers and a list of events
+waiting for processing.</p>
+<p>Modules do two things. Firstly they store data, this data is accessible to other modules and
+other game objects via game object.
+Secondly they respond to events, when a module is enabled it registers event handlers with the
+game object, (and unregisters them on disabling). When an event gets sent to the game object
+it routes it to any registered event handlers, who can respond to the event.</p>
+<p>AddChild adds a child and RemoveChild removes a child from the game object. AddModule adds a
+module and RemoveModule removes a module from the game object.  Modules are stored in a dictionary
+so can be replaced by adding a module into a slot with the same name.</p>
+<p>EnableModule and DisableModule turn modules on or off by calling the modules EnableInternal
+and DisableInternal functions, EnableInternal is also called if you tell AddModule to enable it.
+In EnableInternal you should call AddHandler on the game object to add this module as a handler for
+any events you wish to respond to, the priority specifies the order that modules are called on
+an event. In DisableInternal you should call RemoveHandler to remove the module from handling
+events.</p>
+<p>GetData retrieves a piece of data from a module the format of the string is &lt;module name&gt;.&lt;data name&gt;
+where module name is the name you added the module with. DoEvent sends that event to any registered
+handlers. DoFrame sends the update frame event and any time delayed events that are now due to any
+registered handlers.</p>
+</div></blockquote>
+<p>CG3DModule</p>
+<blockquote>
+<div>This is the base class for any modules of a game object. Override DoEvent to handle any events,
+override GetDataInternal to return data, override EnableInternal to register event handler and
+override DisableInternal to unregister event handlers.</div></blockquote>
+<p>CG3DEvent</p>
+<blockquote>
+<div>This is the base class for events. Each event is designated by an unsigned int, this is usually
+the hash of a string, G3DHashString in utils does this. If you set m_TimeToFire (which is measured
+in seconds), the message will be delayed from executing until that time has elapsed.</div></blockquote>
+<p>CG3DScene</p>
+<blockquote>
+<div>This is the base class for scenes. A scene is a collection of models, that are drawn in an order
+specified by the scene, for instance you could order them by material, or arrange them in a BSP.
+Each scene has a single camera, call Set to set this. Call Add and Remove to add and remove
+CG3DSubModels on the scene. Call apply to draw the whole scene.</div></blockquote>
+</div></blockquote>
+</div>
+<div class="section" id="g3dhierarchy-specific">
+<h2>G3DHierarchy - Specific<a class="headerlink" href="#g3dhierarchy-specific" title="Permalink to this headline">¶</a></h2>
+<p>Each module specification is followed by a list of data this module can return.</p>
+<blockquote>
+<div><p>CG3DFrameModule</p>
+<blockquote>
+<div><p>This is a base class for frame modules. Classes that implement CG3DFrameModule override the
+GetLocal function to convert their data into a local matrix. Each time update is called this
+matrix is sent in a CG3DSetLocalEvent to a module that will calculate the world matrix.</p>
+<blockquote>
+<div>CG3DMatrix local    retrieve the local matrix</div></blockquote>
+</div></blockquote>
+<p>CG3DFrameModuleIdentity</p>
+<blockquote>
+<div>This is a frame model whose local matrix is always identity.</div></blockquote>
+<p>CG3DFrameModulePQS</p>
+<blockquote>
+<div><p>This is a frame module whose local matrix is made up of a position, quaternion, rotation and scale.</p>
+<p>CG3DVector3 pos         position
+CG3DQuaternion quat     rotation
+CG3DVector3 scale       scale</p>
+</div></blockquote>
+<p>CG3DFrameModulePRS</p>
+<blockquote>
+<div><p>This is a frame module whose local matrix is made up of a position, euler rotation and scale.</p>
+<p>CG3DVector3 pos         position
+CG3DVector3 quat        rotation
+CG3DVector3 scale       scale</p>
+</div></blockquote>
+<p>CG3DFrameModuleM</p>
+<blockquote>
+<div><p>This is a frame module whose local matrix is made up of a matrix.</p>
+<p>CG3DMatrix mat          local matrix</p>
+</div></blockquote>
+<p>CG3DDummyModule</p>
+<blockquote>
+<div>This is module that converts receives the set local event and combines it with the parents
+world matrix and sets its world matrix.</div></blockquote>
+<p>CG3DModelModule</p>
+<blockquote>
+<div>This module derives from CG3DDummyModule. It also has a set of CG3DSubModels, a CG3DPositioner
+and a reference to a CG3DScene. On enable it adds the submodels into the scene, on disable it
+removes them.</div></blockquote>
+<p>CG3DCameraModule</p>
+<blockquote>
+<div>This module derives from CG3DDummyModule. It also has a CG3DCamera and a reference to a CG3DScene.
+On enable it sets the camera on the scene, on disable it removes it.</div></blockquote>
+<p>CG3DUpdateModule</p>
+<blockquote>
+<div>This module is a base class for modules that respond to the update event. Override DoUpdate to
+handle this. m_Priority specifies the order that update events happen in.</div></blockquote>
+<p>CG3DUpdateEvent</p>
+<blockquote>
+<div>This is derived from CG3DEvent and is sent to each game object each frame. m_TimeStep is the
+time in seconds since the last frame.</div></blockquote>
+<p>CG3DSetLocalEvent</p>
+<blockquote>
+<div>This is derived from CG3DEvent and is sent from the frame module to the dummy (or model or camera)
+module to set the local position. m_Local is the local matrix.</div></blockquote>
+<p>CG3DSimpleScene</p>
+<blockquote>
+<div>This is derived from CG3DScene. This sorts the submodels it has by material.</div></blockquote>
+</div></blockquote>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Tier 2</a><ul>
+<li><a class="reference internal" href="#g3dhierarchy-generic">G3DHierarchy - Generic</a></li>
+<li><a class="reference internal" href="#g3dhierarchy-specific">G3DHierarchy - Specific</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="tier1.html"
+                        title="previous chapter">Tier 1</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="converter.html"
+                        title="next chapter">Converter</a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="converter.html" title="Converter"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="tier1.html" title="Tier 1"
+             >previous</a> |</li>
+        <li><a href="index.html">G3D 1.00 release 1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Philip Hodgson.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

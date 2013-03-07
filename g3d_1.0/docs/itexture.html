@@ -1,0 +1,222 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>texture input &mdash; G3D 1.00 release 1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.00 release 1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="G3D 1.00 release 1 documentation" href="index.html" />
+    <link rel="next" title="effect input" href="ieffect.html" />
+    <link rel="prev" title="binary file format" href="ffbinary.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="ieffect.html" title="effect input"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="ffbinary.html" title="binary file format"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">G3D 1.00 release 1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="texture-input">
+<h1>texture input<a class="headerlink" href="#texture-input" title="Permalink to this headline">¶</a></h1>
+<p>Textures can be specified in 3 ways:</p>
+<blockquote>
+<div><ol class="arabic">
+<li><p class="first">Load the main image file directly.</p>
+<blockquote>
+<div><p>You can also have a texture configuration xml file alongside the image file, it has to have the
+same name, except with a .xml extension. Its root section is texture (see below).</p>
+</div></blockquote>
+</li>
+<li><p class="first">Load a texture configuration xml file directly. Its root section is texture (see below).</p>
+</li>
+</ol>
+<p>3) Specify textures in the COLLADA file. You can have a configuration xml file alongside the
+COLLADA file, This can contain texture sections (see below) with the attribute name matching
+the name in the COLLADA file.</p>
+</div></blockquote>
+<div class="section" id="file-formats">
+<h2>file formats<a class="headerlink" href="#file-formats" title="Permalink to this headline">¶</a></h2>
+<p>These file formats are accepted as image input formats: .bmp, .dds, .gif, .jpg, .jpeg, .png, .psd, .psp, .tga, .tif, .tiff.</p>
+</div>
+<div class="section" id="texture-section">
+<h2>texture section<a class="headerlink" href="#texture-section" title="Permalink to this headline">¶</a></h2>
+<p>This details the configuration xml element that specifies a texture. This specifies the images in a texture
+and what format to convert them to. It also specifies mip map generation and general texture settings.
+Some attributes apply to the main image specfied prior to this if this is in an alongside configuration file.</p>
+<p>Note: currently compressed textures are not supported.</p>
+<p>texture element has:</p>
+<div class="highlight-python"><pre>attribute   name            0 or 1      string
+    This is the name of the texture.
+    "&lt;root filename&gt;." is prepended to the name.
+attribute   min             0 or 1      "none"|"nearest"|"linear"
+    Minification filtering of the texture. The default is linear.
+attribute   mag             0 or 1      "none"|"nearest"|"linear"
+    Magnification filtering of the texture. The default is linear.
+attribute   mip             0 or 1      "none"|"nearest"|"linear"
+    Mip Map filtering of the texture. The default is nearest.
+attribute   s               0 or 1      "CLAMP"|"MIRRORED"|"REPEAT"|"BORDER"|"MIRROR_ONCE"
+    Wrap style in the s direction. Default is repeat.
+attribute   t               0 or 1      "CLAMP"|"MIRRORED"|"REPEAT"|"BORDER"|"MIRROR_ONCE"
+    Wrap style in the t direction. Default is repeat.
+attribute   numMips         0 or 1      int
+    Amount of Mip levels to use, any levels not specified will be auto generated.
+    Default is 1 level.
+attribute   type            0 or 1      "2d"|"+x"|"+y"|"+z"|"-x"|"-y"|"-z"
+    If we have an along side image, this specifies the type of the image. Default is 2d.
+element     format          0 or more
+    If we have an along side image, images with these formats will be created from that image data.
+    If we have images specified, that do not have a specifed format, images with these
+    formats will be created from those image data's.
+element     image           0 or more
+    These are more images to go in the texture.</pre>
+</div>
+<p>image element has:</p>
+<div class="highlight-python"><pre>attribute   filename        0 or 1      path
+    This is the absolute or relative to this file path to the image data.
+attribute   type            0 or 1      "2d"|"+x"|"+y"|"+z"|"-x"|"-y"|"-z"
+    This specifies the type of the image. Default is 2d.
+attribute   level           0 or 1      int
+    This specifies the mip map level this image is on.
+element     format          0 or more
+    Images with these formats will be created from this image data. An output image will be created for each input image and format
+    combination. This replaces any defaults rather than adding to them.</pre>
+</div>
+<p>format element has:</p>
+<div class="highlight-python"><pre>attribute   depth           0 or 1      "Unknown"|"32_8_24"|"32"|"24_8"|"11_11_10"|"10_10_10_2"|"16"|"5_6_5"|"5_5_5_1"|"4_4_4_4"|"8"
+    This is the pattern of bit depth in the image. A single digit implies all channels have that depth,
+    multiple digits implies the depths of each channel.
+attribute   type            0 or 1      "Typeless"|"Float"|"Unsigned"|"Signed"|"Float_Half_Unsigned"|"Float_Half_Signed"
+    This the type that all the channels are stored in.
+attribute   layout          0 or 1      "R"|"RG"|"RGB"|"A"|"RGBA"|"L"|"LA"|"BGR"|"BGRA"|"BGRX"|"D"|"DS"
+    This is the assignment of each channel.
+    R is red, G is green, B is blue, A is alpha, L is luminance (gray), X is unused, D is depth, S is stencil
+attribute   compression     0 or 1      "BC1"|"BC2"|"BC3"|"BC4"|"BC5"|"BC6H"|"BC7"|
+                                        "RGB_S3TC_DXT1"|"RGBA_S3TC_DXT1"|"RGBA_S3TC_DXT3"|"RGBA_S3TC_DXT5"|
+                                        "ETC1_RGB8"|"RGB_PVRTC_4BPPV1"|"RGB_PVRTC_2BPPV1"|"RGBA_PVRTC_4BPPV1"|"RGBA_PVRTC_2BPPV1"|
+                                        "ATC_RGB"|"ATC_RGBA_EXPLICIT_ALPHA"|"ATC_RGBA_INTERPOLATED_ALPHA"
+    This is the format of compressed textures.
+attribute   flag            0 or 1      "None"|"Norm"|"Norm_SRGB"|"Alpha"
+    This is extra information about the format.
+element     format_alpha    0 or 1
+    This is an alternative format that will be used if the image has an alpha channel. (usually used when specifying defaults).</pre>
+</div>
+</div>
+<div class="section" id="texture-settings-section">
+<h2>texture settings section<a class="headerlink" href="#texture-settings-section" title="Permalink to this headline">¶</a></h2>
+<p>In the project.xml or a level file you can specify global or level wide settings for textures.</p>
+<p>texture (settings) element has:</p>
+<div class="highlight-python"><pre>element     format          0 or more
+    Images will be created with these formats by default. An output image will be created for each input image and format
+    combination. This replaces any defaults rather than adding to them.</pre>
+</div>
+</div>
+<div class="section" id="notes">
+<h2>Notes<a class="headerlink" href="#notes" title="Permalink to this headline">¶</a></h2>
+<p>If compression is specified, depth is set to Compressed and depth and layout should not be specified.
+If depth or layout is specified, compression should not be specified. Compression and layout are stored in the same attribute.</p>
+<p>Note:
+Not all formats are viable, in fact many are not. These are the currently available formats for GLES 2:</p>
+<blockquote>
+<div><p>type is one of      Signed, Unsigned</p>
+<p>layout is one of    A, RGB, RGBA, L, LA</p>
+<p>depth is one of     8, 5_6_5, 5_5_5_1, 4_4_4_4</p>
+</div></blockquote>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">texture input</a><ul>
+<li><a class="reference internal" href="#file-formats">file formats</a></li>
+<li><a class="reference internal" href="#texture-section">texture section</a></li>
+<li><a class="reference internal" href="#texture-settings-section">texture settings section</a></li>
+<li><a class="reference internal" href="#notes">Notes</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="ffbinary.html"
+                        title="previous chapter">binary file format</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="ieffect.html"
+                        title="next chapter">effect input</a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="ieffect.html" title="effect input"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="ffbinary.html" title="binary file format"
+             >previous</a> |</li>
+        <li><a href="index.html">G3D 1.00 release 1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Philip Hodgson.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

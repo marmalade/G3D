@@ -1,0 +1,14 @@
+material input
+==============
+
+Materials are specified in COLLADA files. The name of the effect that this material will be attached to
+is encoded into the name in this format: <material>_<effect> (for example: redCoat_colTex which uses the
+colTex effect). If no effect is found matching, the default effect is used.
+
+On profile profile_COMMON, the following types are allowed: constant, lambert, phong, blinn.
+Within these the following texture or colour parameters are read: emission, ambient, diffuse, specular, reflective, transparent;
+and the following float parameters are read: shininess, reflectivity, transparency, index_of_refraction.
+On profile_CG or profile_GLSL any parameters are allowed.
+
+Not all the parameters found on a material are used. only those matching a hint on an effects parameter description
+are added.

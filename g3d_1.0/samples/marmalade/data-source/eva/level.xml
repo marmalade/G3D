@@ -1,0 +1,19 @@
+<level name="test">
+  <include filename="eva.dae"/>
+  <gameobject name="root">
+    <gameobject name="camera">
+      <framePRS pos="0 -0.5 0" rot="0 0 0"/>
+      <camera>
+        <perspective fov="1.57" aspect="0.75" nearz="0.01" farz="100"/>
+      </camera>
+    </gameobject>
+    <gameobject name="test1" inherit="eva.eva.combatEva">
+      <framePRS pos="-0.5 0 0" rot="0 0 0"/>
+      <rotator speed="-1"/>
+    </gameobject>
+    <gameobject name="test2" inherit="eva.eva.combatEva">
+      <framePRS pos="0.5 0 0" rot="0 0 0"/>
+      <rotator speed="2"/>
+    </gameobject>
+  </gameobject>
+</level>

@@ -1,0 +1,143 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Converter &mdash; G3D 0.95 release 3 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.95 release 3',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="G3D 0.95 release 3 documentation" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li><a href="index.html">G3D 0.95 release 3 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="converter">
+<h1>Converter<a class="headerlink" href="#converter" title="Permalink to this headline">¶</a></h1>
+<p>This takes COLLADA files, image files and its own xml configuration files and converts then into
+text and binary files in formats that G3D understands. The converter runs on plugins and
+all elements of it can be extended and replaced.</p>
+<p>There are currently four different output modes:</p>
+<blockquote>
+<div><p>text</p>
+<blockquote>
+<div><p>This directly reads the models and materials from the COLLADA file and outputs text files.
+This outputs individual texture files and model files and a single effect and a single material
+file containing all effects and all materials.</p>
+<blockquote>
+<div><a class="reference external" href="ffteffect.html">effect file format</a>
+<a class="reference external" href="fftmaterial.html">material file format</a>
+<a class="reference external" href="ffttexture.html">texture file format</a>
+<a class="reference external" href="fftmodel.html">model file format</a></div></blockquote>
+</div></blockquote>
+<p>texthier
+binary
+hierarchy</p>
+</div></blockquote>
+<dl class="docutils">
+<dt>global:</dt>
+<dd><p class="first">configure.project
+configure.level
+configure.texture
+texture .bmp .dds .gif .jpg .jpeg .png .psd .psp .tga .tif .tiff
+process.texture</p>
+<blockquote>
+<div>configure.effect</div></blockquote>
+<p class="last">process.effect
+process.model
+configure.model
+collada.model
+collada.material
+collada.texture
+collada.node
+configure.gameobject
+process.gameobject
+configure.scene
+process.scene
+module.model
+module.dummy
+module.camera
+module. frameM
+module.framePQS
+module.framePRS
+module.frameIdent
+scene.simple</p>
+</dd>
+<dt>text:</dt>
+<dd>collada.scene &lt;ColladaElementsScene&gt;
+write.texture &lt;TextureTextWriter&gt;
+write.effect &lt;EffectTextWriter&gt;
+write.model &lt;ModelTextWriter&gt;
+write.material &lt;MaterialTextWriter&gt;</dd>
+</dl>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li><a href="index.html">G3D 0.95 release 3 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Philip Hodgson.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

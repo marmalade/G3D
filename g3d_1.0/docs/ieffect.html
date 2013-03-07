@@ -1,0 +1,201 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>effect input &mdash; G3D 1.00 release 1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.00 release 1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="G3D 1.00 release 1 documentation" href="index.html" />
+    <link rel="next" title="material input" href="imaterial.html" />
+    <link rel="prev" title="texture input" href="itexture.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="imaterial.html" title="material input"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="itexture.html" title="texture input"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">G3D 1.00 release 1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="effect-input">
+<h1>effect input<a class="headerlink" href="#effect-input" title="Permalink to this headline">¶</a></h1>
+<p>Effects are specified by a configuration xml file. This specifies a series of shaders and parameters
+on those shaders. It also specifies conversions to binary formats. The effects are stored in this order.
+Firstly any program binaries in the order specified in the program/generate attribute.
+Secondly for each shader specified, we store any shader binaries in the
+order specified in the shader/generate attribute followed by the shader source.
+When loading an effect, the first program binary that is compatible, or the
+first shader (per type) thst is compatible is used.
+The root element is an effect element. This file is a standalone file, but could
+reference shader source files.</p>
+<div class="section" id="effect-section">
+<h2>effect section<a class="headerlink" href="#effect-section" title="Permalink to this headline">¶</a></h2>
+<p>effect element has:</p>
+<div class="highlight-python"><pre>attribute   name        0 or 1          string
+    This is the name of the effect. Default is "base".
+    "effects." is prepended to the name.
+attribute   default     0 or 1          bool
+    Is this the default effect, that is applied when an effect cannot be found?
+    By default  this is false.
+element     glsl        0 or more
+    This is a glsl style shader.
+element     hlsl        0 or more
+    This is a hlsl style shader.
+element     program     0 or 1
+    Specify how to generate a program binary
+element     dynamic     0 or more
+    Specify a dynamic shader constant value.
+element     static      0 or more
+    Specify a static shader constant value.</pre>
+</div>
+<p>glsl element has:</p>
+<div class="highlight-python"><pre>attribute   type        1           "vertex"|"pixel"
+    This is the type of the shader.
+value                   0 or 1
+    This is the text of the shader.
+attribute   filename    0 or 1      path
+    This is an absolute or relative path (relative to the current file) specifying
+    a file containing the text of the shader.
+attribute   generate    0 or 1      list of string (separated by ,)
+    This is a list of binary generators (see note below).
+element     define      0 or more
+    This is a define for configuring the shader via the preprocessor.</pre>
+</div>
+<p>hlsl element has:</p>
+<div class="highlight-python"><pre>attribute   target      1           string
+    This is the shader profile targeted. See hlsl documentation for more details.
+    Examples are vs_5_0 and ps_4_0_level_9_3.
+attribute   entry       1           string
+    This is the entry point function of the shader.
+value                   0 or 1
+    This is the text of the shader.
+attribute   filename    0 or 1      path
+    This is an absolute or relative path (relative to the current file) specifying
+    a file containing the text of the shader.
+attribute   generate    0 or 1      list of string (separated by ,)
+    This is a list of binary generators (see note below).
+element     define      0 or more
+    This is a define for configuring the shader via the preprocessor.</pre>
+</div>
+<p>define element has:</p>
+<div class="highlight-python"><pre>attribute   name        1           string
+    This is the name of the define.
+attribute   value       1           string
+    This is the value of the define.</pre>
+</div>
+<p>program element has:</p>
+<div class="highlight-python"><pre>attribute   generate    0 or 1      list of string (separated by ,)
+    This is a list of binary generators (see note below).</pre>
+</div>
+<p>dynamic or static element has:</p>
+<div class="highlight-python"><pre>attribute   name        1           string
+    This is the name of the variable.
+attribute   aux         0 or 1      string
+    This is the name of an associated variable. For instance textures
+    have an associated sampler variable.
+attribute   hint        0 or 1      string
+    This is the name of a material parameter in the COLLADA file to associate
+    with this variable. For instance if hint is diffuse the material gets filled
+    with the COLLADA material's diffuse parameter.
+attribute   type        1           float1|float2|float3|float4|int1|int2|int3|int4|matrix2x2|matrix3x3|matrix4x4|tmatrix2x2|tmatrix3x3|tmatrix4x4|texture
+    This is the type of the variable.</pre>
+</div>
+<p>Note:</p>
+<blockquote>
+<div>There is no difference between dynamic and static variables. Conceptually dynamic are set
+in code and static are set in the material, but this is not enforced.</div></blockquote>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">effect input</a><ul>
+<li><a class="reference internal" href="#effect-section">effect section</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="itexture.html"
+                        title="previous chapter">texture input</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="imaterial.html"
+                        title="next chapter">material input</a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="imaterial.html" title="material input"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="itexture.html" title="texture input"
+             >previous</a> |</li>
+        <li><a href="index.html">G3D 1.00 release 1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Philip Hodgson.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

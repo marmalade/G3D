@@ -1,0 +1,11 @@
+#!/usr/bin/env mkb
+
+files
+{
+    tier0.cpp
+}
+
+subprojects
+{
+    ../../src/g3d
+}

@@ -1,0 +1,96 @@
+effect input
+============
+
+Effects are specified by a configuration xml file. This specifies a series of shaders and parameters
+on those shaders. It also specifies conversions to binary formats. The effects are stored in this order.
+Firstly any program binaries in the order specified in the program/generate attribute.
+Secondly for each shader specified, we store any shader binaries in the
+order specified in the shader/generate attribute followed by the shader source.
+When loading an effect, the first program binary that is compatible, or the
+first shader (per type) thst is compatible is used.
+The root element is an effect element. This file is a standalone file, but could
+reference shader source files.
+
+effect section
+--------------
+
+effect element has::
+
+	attribute	name		0 or 1			string
+		This is the name of the effect. Default is "base".
+		"effects." is prepended to the name.
+	attribute	default		0 or 1			bool
+		Is this the default effect, that is applied when an effect cannot be found?
+		By default  this is false.
+	element		glsl		0 or more
+		This is a glsl style shader.
+	element		hlsl		0 or more
+		This is a hlsl style shader.
+	element		program		0 or 1
+		Specify how to generate a program binary
+	element		dynamic		0 or more
+		Specify a dynamic shader constant value.
+	element		static		0 or more
+		Specify a static shader constant value.
+
+glsl element has::
+
+	attribute	type		1			"vertex"|"pixel"
+		This is the type of the shader.
+	value					0 or 1
+		This is the text of the shader.
+	attribute	filename	0 or 1		path
+		This is an absolute or relative path (relative to the current file) specifying
+		a file containing the text of the shader.
+	attribute	generate	0 or 1		list of string (separated by ,)
+		This is a list of binary generators (see note below).
+	element		define		0 or more
+		This is a define for configuring the shader via the preprocessor.
+		
+hlsl element has::
+
+	attribute	target		1			string
+		This is the shader profile targeted. See hlsl documentation for more details.
+		Examples are vs_5_0 and ps_4_0_level_9_3.
+	attribute	entry		1			string
+		This is the entry point function of the shader.
+	value					0 or 1
+		This is the text of the shader.
+	attribute	filename	0 or 1		path
+		This is an absolute or relative path (relative to the current file) specifying
+		a file containing the text of the shader.
+	attribute	generate	0 or 1		list of string (separated by ,)
+		This is a list of binary generators (see note below).
+	element		define		0 or more
+		This is a define for configuring the shader via the preprocessor.
+
+define element has::
+
+	attribute	name		1			string
+		This is the name of the define.
+	attribute	value		1			string
+		This is the value of the define.
+
+program element has::
+
+	attribute	generate	0 or 1		list of string (separated by ,)
+		This is a list of binary generators (see note below).
+
+dynamic or static element has::
+
+	attribute	name		1			string
+		This is the name of the variable.
+	attribute	aux			0 or 1		string
+		This is the name of an associated variable. For instance textures
+		have an associated sampler variable.
+	attribute	hint		0 or 1		string
+		This is the name of a material parameter in the COLLADA file to associate
+		with this variable. For instance if hint is diffuse the material gets filled
+		with the COLLADA material's diffuse parameter.
+	attribute	type		1			float1|float2|float3|float4|int1|int2|int3|int4|matrix2x2|matrix3x3|matrix4x4|tmatrix2x2|tmatrix3x3|tmatrix4x4|texture
+		This is the type of the variable.
+
+Note:
+
+	There is no difference between dynamic and static variables. Conceptually dynamic are set
+	in code and static are set in the material, but this is not enforced.

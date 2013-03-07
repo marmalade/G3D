@@ -1,0 +1,114 @@
+texture input
+=============
+
+Textures can be specified in 3 ways:
+
+    1) Load the main image file directly.
+
+        You can also have a texture configuration xml file alongside the image file, it has to have the
+        same name, except with a .xml extension. Its root section is texture (see below).
+
+    2) Load a texture configuration xml file directly. Its root section is texture (see below).
+
+    3) Specify textures in the COLLADA file. You can have a configuration xml file alongside the
+    COLLADA file, This can contain texture sections (see below) with the attribute name matching
+    the name in the COLLADA file.
+
+file formats
+------------
+
+These file formats are accepted as image input formats: .bmp, .dds, .gif, .jpg, .jpeg, .png, .psd, .psp, .tga, .tif, .tiff.
+
+texture section
+---------------
+
+This details the configuration xml element that specifies a texture. This specifies the images in a texture
+and what format to convert them to. It also specifies mip map generation and general texture settings.
+Some attributes apply to the main image specfied prior to this if this is in an alongside configuration file.
+
+Note: currently compressed textures are not supported.
+
+texture element has::
+
+    attribute	name			0 or 1		string
+        This is the name of the texture.
+        "<root filename>." is prepended to the name.
+    attribute	min				0 or 1		"none"|"nearest"|"linear"
+        Minification filtering of the texture. The default is linear.
+    attribute	mag				0 or 1		"none"|"nearest"|"linear"
+        Magnification filtering of the texture. The default is linear.
+    attribute	mip				0 or 1		"none"|"nearest"|"linear"
+        Mip Map filtering of the texture. The default is nearest.
+    attribute	s				0 or 1		"CLAMP"|"MIRRORED"|"REPEAT"|"BORDER"|"MIRROR_ONCE"
+        Wrap style in the s direction. Default is repeat.
+    attribute	t				0 or 1		"CLAMP"|"MIRRORED"|"REPEAT"|"BORDER"|"MIRROR_ONCE"
+        Wrap style in the t direction. Default is repeat.
+    attribute	numMips			0 or 1		int
+        Amount of Mip levels to use, any levels not specified will be auto generated.
+        Default is 1 level.
+    attribute	type			0 or 1		"2d"|"+x"|"+y"|"+z"|"-x"|"-y"|"-z"
+        If we have an along side image, this specifies the type of the image. Default is 2d.
+    element		format			0 or more
+        If we have an along side image, images with these formats will be created from that image data.
+        If we have images specified, that do not have a specifed format, images with these
+        formats will be created from those image data's.
+    element		image			0 or more
+        These are more images to go in the texture.
+
+image element has::
+
+    attribute	filename		0 or 1		path
+        This is the absolute or relative to this file path to the image data.
+    attribute	type			0 or 1		"2d"|"+x"|"+y"|"+z"|"-x"|"-y"|"-z"
+        This specifies the type of the image. Default is 2d.
+    attribute	level			0 or 1		int
+        This specifies the mip map level this image is on.
+    element		format			0 or more
+        Images with these formats will be created from this image data. An output image will be created for each input image and format
+		combination. This replaces any defaults rather than adding to them.
+
+format element has::
+
+	attribute	depth			0 or 1		"Unknown"|"32_8_24"|"32"|"24_8"|"11_11_10"|"10_10_10_2"|"16"|"5_6_5"|"5_5_5_1"|"4_4_4_4"|"8"
+		This is the pattern of bit depth in the image. A single digit implies all channels have that depth,
+		multiple digits implies the depths of each channel.
+	attribute	type			0 or 1		"Typeless"|"Float"|"Unsigned"|"Signed"|"Float_Half_Unsigned"|"Float_Half_Signed"
+		This the type that all the channels are stored in.
+	attribute	layout			0 or 1		"R"|"RG"|"RGB"|"A"|"RGBA"|"L"|"LA"|"BGR"|"BGRA"|"BGRX"|"D"|"DS"
+		This is the assignment of each channel.
+		R is red, G is green, B is blue, A is alpha, L is luminance (gray), X is unused, D is depth, S is stencil
+	attribute	compression		0 or 1		"BC1"|"BC2"|"BC3"|"BC4"|"BC5"|"BC6H"|"BC7"|
+											"RGB_S3TC_DXT1"|"RGBA_S3TC_DXT1"|"RGBA_S3TC_DXT3"|"RGBA_S3TC_DXT5"|
+											"ETC1_RGB8"|"RGB_PVRTC_4BPPV1"|"RGB_PVRTC_2BPPV1"|"RGBA_PVRTC_4BPPV1"|"RGBA_PVRTC_2BPPV1"|
+											"ATC_RGB"|"ATC_RGBA_EXPLICIT_ALPHA"|"ATC_RGBA_INTERPOLATED_ALPHA"
+		This is the format of compressed textures.
+	attribute	flag			0 or 1		"None"|"Norm"|"Norm_SRGB"|"Alpha"
+		This is extra information about the format.
+	element		format_alpha	0 or 1
+		This is an alternative format that will be used if the image has an alpha channel. (usually used when specifying defaults).
+
+texture settings section
+------------------------
+
+In the project.xml or a level file you can specify global or level wide settings for textures.
+
+texture (settings) element has::
+
+    element		format			0 or more
+        Images will be created with these formats by default. An output image will be created for each input image and format
+		combination. This replaces any defaults rather than adding to them.
+
+Notes
+-----
+
+If compression is specified, depth is set to Compressed and depth and layout should not be specified.
+If depth or layout is specified, compression should not be specified. Compression and layout are stored in the same attribute.
+
+Note:
+Not all formats are viable, in fact many are not. These are the currently available formats for GLES 2:
+
+	type is one of		Signed, Unsigned
+
+	layout is one of	A, RGB, RGBA, L, LA
+
+	depth is one of		8, 5_6_5, 5_5_5_1, 4_4_4_4

@@ -1,0 +1,176 @@
+Tutorial 3: Adding a custom module
+==================================
+
+This tutorial will take you through adding a custom module to your application.
+As well as adding it to the code we will add it to the data so it can be controlled
+by the level file. This allows modules to be in the control of the designers,
+relieving some of the programmers workload.
+
+You should have done tutorial 1 and tutorial 2 before doing this tutorial.
+
+1) Making the module
+~~~~~~~~~~~~~~~~~~~~
+
+Using the code and data from tutorial 2, open up the project and the file tutorial1.cpp
+In tutorial.cpp add these lines::
+
+	class CMyFirstModule : public CG3DUpdateModule
+	{
+	public:
+		CMyFirstModule() : CG3DUpdateModule(0), m_Angle(0), m_Speed(1) {}
+		virtual void DoUpdate(float timeStep) {
+			CG3DVector3* rot = m_Parent->GetData<CG3DVector3>("frame.rot");
+			rot->y = m_Angle;
+
+			m_Angle+=(float)M_PI*40.0f*timeStep*m_Speed/180.0f;
+		}
+	public:
+		float m_Speed;
+		float m_Angle;
+	};
+
+This creates a new module derived from UpdateModule, this means that DoUpdate is called
+on every frame. In this function, we grab the rotation data from the frame module and
+set the y rotation. The angle is then updated by adding an constant that is multiplied by
+timeStep (which is the time since the last frame) and speed, both of which are measured in
+seconds. Using timestep gives us smooth animation as we are not dependent on the frame rate.
+
+2) Add the module to the Game Object
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Now add this code to the InitInternal function after getting the hierarchy root::
+		
+	CG3DPtr<CG3DGameObject> model = binary->GetData<CG3DGameObject>("test.root.test");
+	model->AddModule("control", new CMyFirstModule, true);
+
+This gets a reference to the model game object and adds our module to it. This is not a
+new version of the game object, if it is already loaded it just returns the current version.
+When we add the module, we give it 2 other pieces of information, the name of the module,
+this allows us to reference the module and if we should enable the module now.
+
+3) Make a converter plugin
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Using Visual Studio 2012 Express for Windows Desktop (or Visual Studio 2012 Pro or higher),
+create a Visual C#/Windows/Class Library project. Then add a reference to::
+
+	<g3d>/bin/converter/G3D.Converter.Converter.dll
+
+Rename class1.cs to Plugin.cs (or whatever you want your plugin to be called), then to this file add::
+	
+	using G3D.Converter.Converter;
+
+This references the base converter classes. Next set the Plugin class to be public and derive
+from IConvertData, then implement the IConvertData interface, after tidying up it should look
+like this::
+
+    public class Plugin : IConvertModule
+    {
+        public void StartExport() {}
+        public void Process(object item) {}
+        public void Setup(ConverterMgr mgr, IConvertItem parent) {}
+
+        public string name { get; }
+    }
+
+we should set the name of the plugin to something, say myplugin, like this::
+
+	public string name { get { return "myplugin"; } }
+
+This is used if our plugin is used for specifying an export, we are not doing that, but we need to
+set it to something.
+
+4) Create a control module handler
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Next we need to create a class that will export our control module::
+
+    public class ControlModule : GOBModule
+    {
+        public override void Load(XElement item)
+        {
+            LoadBase(item, "control", true);
+        }
+        public override void Save(Binary binary) {}
+    }
+
+(you may also have to add System.Xml.Linq to your using list). We also add this code into the
+plugin's Setup function::
+
+	mgr.SetModuleFactory("control", () => new ControlModule());
+
+This add the control module exporter to the module list, referenced as "control". So when we create an
+element called control within a game object, it will call this module to load attributes and sub elements,
+and to save the data.
+
+5) Add a parameter
+~~~~~~~~~~~~~~~~~~
+
+Next we add a parameter to the module handler, called speed. Firstly we add the member variable to ControlModule::
+
+	public float speed = 1.0f;
+
+Next we add this code to the end of the Load function::
+
+    string xSpeed = null;
+    if (item != null)
+    {
+        xSpeed = (string)item.Attribute("speed");
+    }
+    if (xSpeed != null)
+    {
+        speed = float.Parse(xSpeed);
+    }
+
+This tries to load the attribute speed from the xml and set the member variable to this.
+
+Finally we add this to the Save function::
+
+	binary.bw.Write(speed);
+
+Now we should be able to read the speed attribute from the level xml file and save it to the binary file.
+
+6) Add the plugin to the converter
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Change the projects build options output path to something sensible and rebuild the project.
+Next open the file bin\converter\G3D.Converter.Batch.xml. Add a line like this to the file::
+
+  <plugin filename="..\..\samples\tutorial\tools\MyPlugin.dll"/>
+
+Changing the filename to point to your plugin, this path is relative to the xml file or absolute.
+
+7) Modifying your data
+~~~~~~~~~~~~~~~~~~~~~~
+
+In your level file from tutorial 1 add this line inside the game object that references your model::
+
+      <control speed="-1"/>
+
+This tells the game object to add a contol module with a speed parameter of -1.
+
+Now run the converter again.
+
+8) Modifying the tutorial
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Finally we need to modify the tutorial to load this data. Remove the 2 lines we added to add the control 
+module to the model game object. Next add this code above the app class::
+
+	class ControlModuleHandler : public CG3DBinaryHandler {
+	public:
+		virtual CG3DRefCount* Load(BinaryFP* fp) {
+			CMyFirstModule* module = new CMyFirstModule;
+			module->m_Speed = fp->ReadFloat();
+			return module;
+		}
+	};
+
+This creates a new MyFirstModule and reads the float parameter. Finally add this after initialising
+the binary loader::
+
+	binary->AddModuleHandler("control",new ControlModuleHandler());
+
+This calls the ControlModuleHandler when it reads a control module.
+
+Now run it, it should rotate the other way.

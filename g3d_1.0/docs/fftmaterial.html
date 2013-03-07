@@ -1,0 +1,126 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>material text file format &mdash; G3D 1.00 release 1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.00 release 1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="G3D 1.00 release 1 documentation" href="index.html" />
+    <link rel="next" title="texture text file format" href="ffttexture.html" />
+    <link rel="prev" title="effect text file format" href="ffteffect.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="ffttexture.html" title="texture text file format"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="ffteffect.html" title="effect text file format"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">G3D 1.00 release 1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="material-text-file-format">
+<h1>material text file format<a class="headerlink" href="#material-text-file-format" title="Permalink to this headline">¶</a></h1>
+<p>This file has a number of materials and their parameters.</p>
+<blockquote>
+<div><p>material &lt;name&gt; &lt;effect&gt;</p>
+<blockquote>
+<div>Specifies the start of a new material. &#8220;effect&#8221; is an effect that has
+been loaded into the effect library that is passed into the material library.</div></blockquote>
+<p>parameter &lt;name&gt; float &lt;float&gt; [&lt;float&gt; [&lt;float&gt; [&lt;float&gt;]]]</p>
+<blockquote>
+<div>This specifies the data for one of the parameters specified in the referenced effect.
+The data is 1-4 float values.</div></blockquote>
+<p>parameter &lt;name&gt; int &lt;int&gt; [&lt;int&gt; [&lt;int&gt; [&lt;int&gt;]]]</p>
+<blockquote>
+<div>This specifies the data for one of the parameters specified in the referenced effect.
+The data is 1-4 int values.</div></blockquote>
+<p>parameter &lt;name&gt; texture &lt;filename&gt;</p>
+<blockquote>
+<div>This specifies the data for one of the parameters specified in the referenced effect.
+The data is a texture file.</div></blockquote>
+</div></blockquote>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="ffteffect.html"
+                        title="previous chapter">effect text file format</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="ffttexture.html"
+                        title="next chapter">texture text file format</a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="ffttexture.html" title="texture text file format"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="ffteffect.html" title="effect text file format"
+             >previous</a> |</li>
+        <li><a href="index.html">G3D 1.00 release 1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Philip Hodgson.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

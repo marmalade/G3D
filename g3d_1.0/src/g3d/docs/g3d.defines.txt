@@ -1,0 +1,5 @@
+G3D_USE_IWGL		use iwgl in marmalade projects rather than s3egl
+G3D_DEBUG			debug define
+G3D_THREADED_LOADER Binary loader code uses threading
+G3D_USE_DX11		in the extension this platform uses DX11
+G3D_USE_EXTENSION	use the extension

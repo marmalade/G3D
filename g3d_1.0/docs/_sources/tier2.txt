@@ -1,0 +1,135 @@
+Tier 2
+======
+
+Tier 2 is the top layer of G3D, this contains the game object hierarchy and scene management classes.
+
+Complex applications will use tier 2 or have there own system that does a similar job. Tier 2 is not
+the only way to approach this problem, but it is designed to be as generic as possible.
+
+There is currently 1 section in tier 2: G3DHierarchy.
+
+G3DHierarchy - Generic
+----------------------
+
+	CG3DGameObject
+
+		This is a generic container for 3D objects, that is part of a hierarchy.
+		It contains a set of modules that contain the code and data for the game object, the game object
+		is just a framework that the modules sit in. A game object has a world matrix, a pointer to its
+		parent, a list of children, a set of modules, a set of event handlers and a list of events
+		waiting for processing.
+
+		Modules do two things. Firstly they store data, this data is accessible to other modules and
+		other game objects via game object.
+		Secondly they respond to events, when a module is enabled it registers event handlers with the
+		game object, (and unregisters them on disabling). When an event gets sent to the game object
+		it routes it to any registered event handlers, who can respond to the event.
+
+		AddChild adds a child and RemoveChild removes a child from the game object. AddModule adds a
+		module and RemoveModule removes a module from the game object.  Modules are stored in a dictionary
+		so can be replaced by adding a module into a slot with the same name.
+
+		EnableModule and DisableModule turn modules on or off by calling the modules EnableInternal
+		and DisableInternal functions, EnableInternal is also called if you tell AddModule to enable it.
+		In EnableInternal you should call AddHandler on the game object to add this module as a handler for
+		any events you wish to respond to, the priority specifies the order that modules are called on
+		an event. In DisableInternal you should call RemoveHandler to remove the module from handling
+		events.
+
+		GetData retrieves a piece of data from a module the format of the string is <module name>.<data name>
+		where module name is the name you added the module with. DoEvent sends that event to any registered
+		handlers. DoFrame sends the update frame event and any time delayed events that are now due to any
+		registered handlers.
+
+	CG3DModule
+
+		This is the base class for any modules of a game object. Override DoEvent to handle any events,
+		override GetDataInternal to return data, override EnableInternal to register event handler and
+		override DisableInternal to unregister event handlers.
+
+	CG3DEvent
+
+		This is the base class for events. Each event is designated by an unsigned int, this is usually
+		the hash of a string, G3DHashString in utils does this. If you set m_TimeToFire (which is measured
+		in seconds), the message will be delayed from executing until that time has elapsed.
+
+	CG3DScene
+
+		This is the base class for scenes. A scene is a collection of models, that are drawn in an order
+		specified by the scene, for instance you could order them by material, or arrange them in a BSP.
+		Each scene has a single camera, call Set to set this. Call Add and Remove to add and remove
+		CG3DSubModels on the scene. Call apply to draw the whole scene.
+
+G3DHierarchy - Specific
+-----------------------
+
+Each module specification is followed by a list of data this module can return.
+
+	CG3DFrameModule
+
+		This is a base class for frame modules. Classes that implement CG3DFrameModule override the
+		GetLocal function to convert their data into a local matrix. Each time update is called this
+		matrix is sent in a CG3DSetLocalEvent to a module that will calculate the world matrix.
+
+			CG3DMatrix local	retrieve the local matrix
+
+	CG3DFrameModuleIdentity
+
+		This is a frame model whose local matrix is always identity.
+
+	CG3DFrameModulePQS
+
+		This is a frame module whose local matrix is made up of a position, quaternion, rotation and scale.
+
+		CG3DVector3 pos			position
+		CG3DQuaternion quat		rotation
+		CG3DVector3 scale		scale
+
+	CG3DFrameModulePRS
+
+		This is a frame module whose local matrix is made up of a position, euler rotation and scale.
+
+		CG3DVector3 pos			position
+		CG3DVector3 quat		rotation
+		CG3DVector3 scale		scale
+
+	CG3DFrameModuleM
+
+		This is a frame module whose local matrix is made up of a matrix.
+
+		CG3DMatrix mat			local matrix
+
+	CG3DDummyModule
+
+		This is module that converts receives the set local event and combines it with the parents
+		world matrix and sets its world matrix.
+		
+	CG3DModelModule
+
+		This module derives from CG3DDummyModule. It also has a set of CG3DSubModels, a CG3DPositioner
+		and a reference to a CG3DScene. On enable it adds the submodels into the scene, on disable it
+		removes them.
+		
+	CG3DCameraModule
+
+		This module derives from CG3DDummyModule. It also has a CG3DCamera and a reference to a CG3DScene.
+		On enable it sets the camera on the scene, on disable it removes it.
+		
+	CG3DUpdateModule
+
+		This module is a base class for modules that respond to the update event. Override DoUpdate to
+		handle this. m_Priority specifies the order that update events happen in.
+		
+	CG3DUpdateEvent
+
+		This is derived from CG3DEvent and is sent to each game object each frame. m_TimeStep is the
+		time in seconds since the last frame.
+
+	CG3DSetLocalEvent
+
+		This is derived from CG3DEvent and is sent from the frame module to the dummy (or model or camera)
+		module to set the local position. m_Local is the local matrix.
+
+	CG3DSimpleScene
+
+		This is derived from CG3DScene. This sorts the submodels it has by material.

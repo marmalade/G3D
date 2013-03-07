@@ -1,0 +1,8 @@
+#!/usr/bin/env mkb
+
+files
+{
+    rendertotexture.cpp
+}
+
+subproject ../../src/g3d

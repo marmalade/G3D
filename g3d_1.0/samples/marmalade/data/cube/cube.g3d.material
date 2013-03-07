@@ -1,0 +1,4 @@
+material test_plaintext plaintext
+parameter Texture texture file1.g3d.texture
+
+material buffer plaintext

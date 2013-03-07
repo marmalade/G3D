@@ -1,0 +1,63 @@
+node text file format
+=====================
+
+This file has a set of nodes and the data extracted from the COLLADA file on each node.
+This file is used mainly for checking the contents of the conversion.
+
+    node <name> <type>
+
+        Start of a node. The type is one of: node, joint, camera, geometry, controller or light
+
+    lookat <name> <eye.x> <eye.y> <eye.z> <lookat.x> <lookat.y> <lookat.z> <up.x> <up.y> <up.z>
+
+        Multiply the transform matrix by a look at matrix, defined by an eye position, a point to look at and the up vector.
+
+    matrix <name> <m11> <m12> <m13> <m14> <m21> <m22> <m23> <m24> <m31> <m32> <m33> <m34> <m41> <m42> <m43> <m44>
+
+        Multiply the transform matrix by a matrix.
+
+    rotate <name> <axis.x> <axis.y> <axis.z> <angle>
+
+        Multiply the transform matrix by a rotation matrix, defined by a rotation about the axis.
+
+    rotateX <name> 1 0 0 <angle>
+
+        Multiply the transform matrix by a rotation matrix, defined by a rotation about the x axis.
+
+    rotateY <name> 0 1 0 <angle>
+
+        Multiply the transform matrix by a rotation matrix, defined by a rotation about the y axis.
+
+    rotateZ <name> 0 0 1 <angle>
+
+        Multiply the transform matrix by a rotation matrix, defined by a rotation about the z axis.
+
+    scale <name> <x> <y> <z>
+
+        Multiply the transform matrix by a scale matrix, defined by this scale.
+
+    translate <name> <x> <y> <z>
+
+        Multiply the transform matrix by a translate matrix, defined by this translation.
+
+    skew <name> <rotaxis.x> <rotaxis.y> <rotaxis.z> <transaxis.x> <transaxis.y> <transaxis.z> <angle>
+
+        Multiply the transform matrix by a skew matrix, defined by a rotation axis, a translation axis
+             an angle.
+
+    model <full name>
+
+        This is a global reference to a model somewhere in the data.
+
+    material <full name>
+
+        This is a global reference to a material somewhere in the data.
+
+    camera true|false <x> <y> <aspect> <nearz> <farz>
+
+        Define the projection matrix of the camera, if the first parameter is true it is a orthographic projection
+        matrix, otherwise a perspective.
+
+    child <full name>
+
+        This defines that a node somewhere in the data is a child of this node.

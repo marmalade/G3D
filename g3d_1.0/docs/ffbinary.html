@@ -1,0 +1,177 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>binary file format &mdash; G3D 1.00 release 1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.00 release 1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="G3D 1.00 release 1 documentation" href="index.html" />
+    <link rel="next" title="texture input" href="itexture.html" />
+    <link rel="prev" title="node text file format" href="fftnode.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="itexture.html" title="texture input"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="fftnode.html" title="node text file format"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">G3D 1.00 release 1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="binary-file-format">
+<h1>binary file format<a class="headerlink" href="#binary-file-format" title="Permalink to this headline">¶</a></h1>
+<p>The file is split into a number of sections each has a header like this:</p>
+<div class="highlight-python"><pre>byte[4] ident   //FOURCC style identifier (eg G3DW)
+uint    size    //size of the section incuding header</pre>
+</div>
+<p>The file is organised hierarchically (a section can contain other sections).</p>
+<blockquote>
+<div><p>G3DW</p>
+<blockquote>
+<div><p>This is the root section, this contains all the other sections and has
+a header like this:</p>
+<div class="highlight-python"><pre>ushort version  //version number of the file format (currently 0)
+ushort num      //number of tables
+uint tables     //absolute offset to the start of the tables (ident TABL)
+uint string     //absolute offset to the import strings section (ident IMPT)
+uint reloc      //absolute offset to the relocation section (ident RELC)</pre>
+</div>
+<p>After this the various data sections are stored, followed by the tables,
+string and reloc sections.</p>
+</div></blockquote>
+<p>TABL</p>
+<blockquote>
+<div><p>This is a table of entries that point to data sections. There may be several of them
+in the file, as each can contain a maximum of 65536 entries. Each table has a header:</p>
+<div class="highlight-python"><pre>ushort ident    //unique identifier of this table or 0
+ushort num      //number of entries
+uint flags      //GenerateID = 1, Patch = 2, HasStrings = 4</pre>
+</div>
+<p>If GenerateID is set, on load up an ident is generated. If Patch is set this patches an existing
+table. If HsStrings is set, the table is followed by a string section.
+Following this are num entries, the format of each entry is:</p>
+<div class="highlight-python"><pre>uint offset     //absolute offset to the start of the data section</pre>
+</div>
+<p>This is followed by an optional string section, this has a header with the number of strings (uint) and
+a set of 0 terminated strings, which are the names for each table entry.</p>
+</div></blockquote>
+<p>IMPT</p>
+<blockquote>
+<div>This is an optional section, it has a header with the number of strings (uint) then a set of 0 terminated strings.
+Refer to the note about references below to see how this is used.</div></blockquote>
+<p>RELC</p>
+<blockquote>
+<div>This is an optional section, it has a header with the number of entries (uint) then a set of absolute offsets to
+each reference to another data section (uint), this is used during the &#8216;link&#8217; process.</div></blockquote>
+</div></blockquote>
+<div class="section" id="note-references">
+<h2>Note: references<a class="headerlink" href="#note-references" title="Permalink to this headline">¶</a></h2>
+<p>There are two ways of doing references.</p>
+<blockquote>
+<div><p>1) a uint offset into the import strings table. So we go from the reference to the name, we look this name up in
+the strings provided by the tables to get a table and entry ident:</p>
+<div class="highlight-python"><pre>ushort table
+ushort entry</pre>
+</div>
+<p>This finds the appropiate table and entry and then section.</p>
+<ol class="arabic simple" start="2">
+<li>a table and entry ident, this finds the appropiate table and entry and then section.</li>
+</ol>
+</div></blockquote>
+<p>The &#8216;link&#8217; process uses the reloc section to convert all type 1 references into type 2. This gets rid of the import string
+and reloc sections. If the import string section is present, it assumes we are using type 1. Currently the &#8216;link&#8217; process
+is not implemented.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">binary file format</a><ul>
+<li><a class="reference internal" href="#note-references">Note: references</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="fftnode.html"
+                        title="previous chapter">node text file format</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="itexture.html"
+                        title="next chapter">texture input</a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="itexture.html" title="texture input"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="fftnode.html" title="node text file format"
+             >previous</a> |</li>
+        <li><a href="index.html">G3D 1.00 release 1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Philip Hodgson.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

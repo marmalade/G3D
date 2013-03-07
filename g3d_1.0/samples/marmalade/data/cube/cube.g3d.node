@@ -1,0 +1,8 @@
+node cube.cube node
+child cube.cube.pCube1
+
+node cube.cube.pCube1 geometry
+translate translate {X:-0.02062489 Y:0.8634769 Z:-0.03347324}
+model cube.pCubeShape1
+material cube.test_plaintext
+

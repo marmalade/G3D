@@ -1,0 +1,261 @@
+Tier 0
+======
+
+Tier 0 is the lowest level of G3D, this contains the core classes, the abstract interfaces to
+the system and graphics sections, the platform implementations of system and graphics and
+the maths library.
+
+Most applications will not use tier 0 exclusively, unless you are integrating G3D into an existing
+engine, but you will use some of the functionality and the other tiers sit on top of tier 0.
+
+There are 4 sections in tier 0: G3DMaths, G3DCore, G3DGLES and G3DMarmalade.
+
+G3DMaths
+--------
+
+This is maths library containing all the essential 3D maths classes, used by G3D.
+The library is loosely based on the XNA maths library.
+
+	CG3DVector2, CG3DVector3, CG3DVector4
+
+		These are 2D, 3D and 4D (or homogenous) vectors.
+
+	CG3DMatrix
+
+		This is a 4x4 matrix.
+
+	CG3DQuaternion
+
+		This is a quaternion, it is an alternative way of representing rotations in 3D
+		that is more efficient in certain types of calculation.
+
+	CG3DColour
+
+		This represents colour as 4 bytes (r, g, b and a). It can convert to and from
+		CG3DVector4.
+
+G3DCore - core classes
+----------------------
+
+This is the core classes, the abstract interfaces to the system and graphics sections.
+
+	CG3DBase
+
+		This is the base class for nearly all G3D classes. You cannot call delete on this
+		class, instead call Release. This allows us to implement reference counting or
+		cope with deleting data from an extension (which may be on a separate heap).
+
+	CG3DRefCount
+
+		This is used as the base class for the majority of classes, it is derived from CG3DBase.
+		This maintains a reference count, call AddRef to increment it and Release to decrement,
+		Release deletes the class if your reference count falls to 0.
+
+	CG3DPtr
+
+		This is a smart pointer to a CG3DRefCount derived class. When its value is set it calls
+		AddRef, when it changed or goes out of scope it calls Release. call get to get a C pointer
+		to its contents.
+
+	CG3DResource
+
+		This is used as a base class for graphics resources and containers of graphics resources.
+		Derived classes have functions to add data to this class, you then call:
+
+			Upload
+				to move this data to the GPU for the first time.
+
+			Reload
+				to update the data on the GPU.
+
+			Unload
+				to remove the data from the GPU.
+
+			Apply
+				to set the data as current on the GPU, or to draw it.
+
+		It also has flags, these are hints to the GPU. Upload normally removes the data from
+		memory, but if you set the DYNAMIC flag, this does not happen.
+
+	CG3DResourceList
+
+		This is a class derived from CG3DResource that contains a list of resources. This applies
+		its state to its children, so when you call Upload, it calls Upload on all its children,
+		and so on. Call Add to add a child and Remove to remove one.
+
+	CG3DBuffer
+
+		This is a class derived from CG3DResource, it has a buffer of arbitrary data.
+		Call CreateBuffer to allocate the buffer, you can then copy into the returned pointer,
+		call Add to append data, or Set to set data at an offset.
+
+G3DCore - system interface
+--------------------------
+
+This is the abstract interface to the system section. The system section exposes a small subset
+of the underlying systems functionality. This functionality is used by the rest of G3D.
+This is abtracted so we can use G3D on other systems, generally you do not have to do the same.
+
+	CG3DSystem
+
+		This is the main abstract interface to the system.
+
+			Init
+				This initialises the system, the implementation of system is responsible for
+				deciding what graphic system to use, so this function returns the implementation
+				of the graphics system.
+			MakeMutex
+				This makes a mutex class that restricts access to a resource to one thread.
+			GetSize
+				This returns the current screen dimensions.
+			GetTime
+				This returns the current time.
+			Update
+				This updates parts of the system that need a tick update.
+			EndRender
+				This swaps the screen buffer, to signal the end of drawing a frame.
+			Trace
+				This outputs to the log.
+			Error
+				This displays a message in a dialog box.
+			GetInterface
+				This is a static function to get the current system.
+
+We also have some ASSERT macros	G3D_ASSERT_EXPR, G3D_ASSERT_RET, G3D_ASSERT_RETC, G3D_ASSERT_RETF, G3D_ASSERT_RETFC
+G3D_ASSERT_RETN, G3D_ASSERT_RETNC. We call them like this::
+
+	G3D_ASSERT_EXPR(<bool expr>, ("<message>", <params>));
+
+for instance::
+
+	G3D_ASSERT_EXPR(x == "hello", ("x should equal hello not %s", x.c_str());
+
+The RET versions return when the expression is false, RETF returns false, RETN returns NULL.
+The C versions specify a bit of code to call before returning.
+
+G3DCore - graphics interface
+----------------------------
+
+This is the abstract interface to the graphics system. This covers the majority of the
+graphics system. The system is abstracted so we can use different graphics systems
+depending in the device we are running on.
+
+	CG3DGraphics
+
+		This class has two main uses, firstly to make the implementaions of the
+		graphics classes, and secondly to set global graphics state. It also clears
+		the current screen. The Init function is called by the system section, do not
+		call it yourself.
+
+		Global graphics state is split into 10 sets. Each set has a few bits of the
+		global state. CG3DGraphics has a stack for each Set. PushGlobalSet pushes
+		a set onto the stack, PopGlobalSet, pops it, SetGlobalSet, pops the current
+		set and pushes a new set, and ApplyGlobalSet re-applies the current set.
+		See g3d\core\h\GlobalSet.h for details.
+
+	CG3DVertexBuffer
+
+		This class encapsulates a vertex buffer, it is derived from CG3DBuffer.
+		To create a vertex buffer, call MakeVertexBuffer on the graphics class.
+		Call AddElement for each channel of your vertex data to describe the format
+		of the vertex buffer. Call the usual buffer functions to set the data on
+		the vertex buffer. Finally, you need to call PatchUp with a material or effect
+		before you can use the vertex buffer, this sets up the association of
+		channels to attributes in your shader.
+
+	CG3DIndexBuffer
+	
+		This class encapsulates an index buffer, it is derived from CG3DBuffer.
+		To create an index buffer, call MakeIndexBuffer on the graphics class.
+		Call Setup to set the type of the index buffer and the size of an index.
+		Call the usual buffer functions to set the data on the index buffer.
+
+	CG3DShader
+
+		This class encapsulates a vertex or pixel shader. It is derived from CG3DResource.
+		Shaders are created by calling MakeShader on an effect, this also adds them to the effect.
+		Shaders can be added as source or binary, most devices support source, some also support
+		binary (of which there are competing formats), a few support only binary.
+		To set the shader with source call SetSource with the type and source string.
+		To set the shader with binary call MakeBinaryBuffer with the type, length and format,
+		this returns a buffer to copy the binary data into. The format is a GLES binary format
+		indicator, you can also use ValidFormat to enquire if the format is supported.
+
+	CG3DEffect
+
+		This class encapsulates an effect, that is a combination of shaders and parameters
+		on those shaders that specifies a technique for drawing polygons. An effect is the
+		equivalent of a class, it has code and variables, whereas CG3DMaterial is the equivalent
+		of an instance of a class. CG3DEffect is derived from CG3DResourceList.
+
+		To Make an Effect call MakeEffect on CG3DEffect. To make a shader call MakeShader on this class.
+		To make a material call MakeMaterial, this makes a material tied to this affect.
+		MakeSubMaterial is like MakeMaterial, except the material is treated as an extra partial
+		material (that is setting only a few of the parameters), and not applying the effect.
+		This is usually used for parameters that are used across a range of shaders, like world,
+		view and projection matrices; you specify the view and projection matrices per scene, the
+		world matrix per model and the main material per sub model. The bufferName parameter is ignored
+		for glsl shaders.
+
+		SetProgramBinary specifies a program binary (that is a blob containing a set of shader binaries)
+		of a particular format, (you can check the format is supported by calling ValidProgramFormat).
+		AddParameter and AddTexture add parameter definitions, these must match attributes in the shaders,
+		but may have different formats, so long as they are convertable.
+
+	CG3DMaterial
+
+		This class encapsulates a material, this is the concrete parameters of an effect. This specifies
+		the look of a polygon.  CG3DMaterial is derived from CG3DResourceList.
+		To make a material call MakeMaterial or MakeSubMaterial on CG3DEffect.
+		SetParameter and SetTexture, set the data for a parameter specified on the effect.
+
+		AddSet and RemoveSet add or remove global state sets that will be applied whilst this material is
+		in effect. That is between calls to Apply (which pushes the global state and sets the material)
+		and DoneApply (which pops the global state).
+
+	CG3DTexture
+
+		This class encapsulates a texture and its state. A texture is a collection of images. 2D textures
+		have different images for each mip level. Cube textures have different images for each face and
+		mip level. CG3DTexture is derived from CG3DResource. Textures are made by calling MakeTexture on
+		CG3DGraphics.
+
+		Setup sets the state of the texture, that is whether it is a cube of 2D texture, its filter type,
+		its wrapping in S and T and do we generate mip maps.
+		AddImage creates an image that is in particular dimensions, format and type, it returns a buffer
+		to be filled with the image data.
+		ValidFormat tests if an image format is valid.
+
+	CG3DRenderTo
+
+		This specifies an offscreen surface that can be rendered to. CG3DRenderTo is derived from CG3DResourceList.
+		Call MakeRenderTo on GG3DGraphics to create a CG3DRenderTo.
+
+		CG3DRenderTo has 3 channels COLOUR, DEPTH and STENCIL. Not all channels need to be created. SetBuffer creates
+		an internal buffer of a particular size and format on a channel. SetTexture sets the image of a texture on a
+		channel. As far as CG3DRenderTo is concerned, both do the same thing, but SetTexture allows the data to be
+		referenced outside of CG3DRenderTo. To set the CG3DRenderTo as the current render target, call Apply. Call
+		DoneApply to revert to the previous render target.
+
+		AddSet and RemoveSet add or remove global state sets that will be applied whilst this is the current render
+		target.
+		
+G3DGLES
+-------
+
+This is the implementation of the graphics section for OpenGL ES 2.0. It has one function MakeG3DGraphicsGLES, but this
+is called from G3DMarmalade, so you don't have to worry about this.
+
+There is a define G3D_USE_IWGL that can be applied in your MKB file. This makes G3DGLES use IwGL, rather then s3eGL
+directly. IwGL is slower, but deals with suspend / resume for you.
+
+G3DMarmalade
+------------
+
+This is the implementation of the system section for Marmalade. It has one function MakeG3DSystemMarmalade. This returns
+a CG3DSystem class, once you have got this class you should call the Init function, this will return an implementation
+of the CG3DGraphics class.
+
+The function has an optional parameter CG3DSystemConfigIW, this configures the graphics surface used. The m_ViewFormat and
+m_DepthFormat fields configure the view and depth formats used to create the display. However if you use G3D_USE_IWGL these
+are ignored. The m_GLOnly field is not implemented yet.

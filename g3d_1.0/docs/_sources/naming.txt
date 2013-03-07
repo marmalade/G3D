@@ -1,0 +1,26 @@
+Shader naming Conventions
+=========================
+
+There are certain naming conventions used by G3D, in particular with regard to shaders.
+
+1) attributes
+
+	In order to match shader attributes with channels defined in COLLADA we need to name
+	our attributes by semantic names. COLLADA has a long list, as has the HLSL docs.
+	Here are a few common ones: VERTEX, NORMAL, COLOR and TEXCOORD. They are optionally 
+	followed by a number to distinguish between channels of the same type.
+
+2) uniforms
+
+	Tier 1 and Tier 2 of G3D expect 3 uniforms to have particular names. These uniforms
+	are World, View and Proj. These represent the world, view and projection matrices.
+	In particular CG3DPositioner and CG3DCamera rely on all effects having these. You can
+	use CG3DPositioner and CG3DCamera to change the names globally.
+
+Material naming Conventions
+===========================
+
+Material names are made up of two parts, firstly the name of the material followed by the
+name of the effect to attach to this material. They are separated by an _. For example::
+
+	red_wall

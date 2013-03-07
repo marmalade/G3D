@@ -1,0 +1,334 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Tutorial 1: Preparing Data &mdash; G3D 1.00 release 1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.00 release 1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="G3D 1.00 release 1 documentation" href="index.html" />
+    <link rel="next" title="Tutorial 2: Your first G3D Application" href="tutorial2.html" />
+    <link rel="prev" title="G3D" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="tutorial2.html" title="Tutorial 2: Your first G3D Application"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="G3D"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">G3D 1.00 release 1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="tutorial-1-preparing-data">
+<h1>Tutorial 1: Preparing Data<a class="headerlink" href="#tutorial-1-preparing-data" title="Permalink to this headline">¶</a></h1>
+<p>This tutorial takes you through creating a piece of data for use in your game.
+We will be exporting a single piece of data, but this can easily be scaled up
+to exporting whole levels.</p>
+</div>
+<div class="section" id="tutorial">
+<h1>Tutorial<a class="headerlink" href="#tutorial" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="organisation">
+<h2>1) Organisation<a class="headerlink" href="#organisation" title="Permalink to this headline">¶</a></h2>
+<p>It is always best to work out our directory structure before we begin. Before
+you know it, we will have lots of data flying about in various stages of conversion,
+so we need to get organised.</p>
+<ol class="loweralpha">
+<li><p class="first">Create a directory for the root of the project (I am calling mine tutorial).</p>
+</li>
+<li><dl class="first docutils">
+<dt>Create 3 directories inside this: art, data-source and data.</dt>
+<dd><p class="first last">art is where your 3d art package files and your source images are stored, this
+should be organised into a folder structure, as you see fit.
+data-source is where the intermediate data files live. That is the COLLADA files
+and the xml configuration files that drive the converter, we will come to those soon.
+data is where the output data goes. Marmalade expects that data it uses lives in here.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>In the data-source directory create a file project.xml. This file has project wide</dt>
+<dd><p class="first last">configuration settings for your project any settings you want to apply to the whole
+project put in here.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>In the project.xml file add this code:</dt>
+<dd><div class="first highlight-python"><pre>&lt;project&gt;
+&lt;/project&gt;</pre>
+</div>
+<p class="last">This tells the Converter that this is a project settings file.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="first docutils">
+<dt>Add in this code into the project section:</dt>
+<dd><div class="first highlight-python"><pre>&lt;directory name="binary" path="..\data"/&gt;</pre>
+</div>
+<p class="last">This specifies that the &#8220;binary&#8221; directory, which tells the Converter where to put its
+binary output files, is our data directory. We can specify the path as an absolute
+path or relative to the project.xml file.</p>
+</dd>
+</dl>
+</li>
+</ol>
+<p>There, we now have the basis for organising our project.</p>
+</div>
+<div class="section" id="creating-a-model">
+<h2>2) Creating a model<a class="headerlink" href="#creating-a-model" title="Permalink to this headline">¶</a></h2>
+<p>Firstly we need to get hold of a COLLADA converter for our favourite 3D art package.
+Thankfully these are widepread, and are available for the majority of packages.
+If you are using 3DS Max or Maya, I recommend you use the OpenCollada exporters as
+they represent the package&#8217;s data more faithfully than other exporters.</p>
+<p>Now we need to create a model in our package. In terms of the tutorial, it does not
+matter what shape this is, that is up to you, but more important is the scale it is
+built at. You need to create all your models at a consistant scale, for the purposes
+of this tutorial create it to be about 1 or 2 units in each dimension.</p>
+<p>Assign a standard material to the whole model and set a texture on the material,
+You can have more than one material on a model, and lots of different material
+types and parameters, but we have done it this way to keep it simple.</p>
+<p>There is a naming convention to follow with materials, the name of the material
+should be in the form &lt;material name&gt;_&lt;effect name&gt;. This signals to the converter
+which effect to use with the material. We will name the effect textplain (So I am going to
+call the material stone_textplain). It is a good idea to name the model to something sensible
+too, as we will refer to it later (I am going to call it cube).</p>
+<p>You should save the scene into the art directory you made earlier, It does not matter
+where the texture image is located, in terms of the converter, but you should be organised
+about where you store them.</p>
+<p>Now export your scene as a COLLADA file into the data-source directory you made earlier.
+You may want to export it into a subdirectory. (I am going to export the file as tut/tut.dae)</p>
+</div>
+<div class="section" id="effect-file">
+<h2>3) Effect file<a class="headerlink" href="#effect-file" title="Permalink to this headline">¶</a></h2>
+<p>We now need to create the effect file that the material will use. This is an xml file
+containing a vertex and a pixel shader. A vertex shader is a small program that is called
+on each vertex of a model, it usually converts the position data from 3D to 2D and
+passes values through to the pixel shader, but it can do much more. A pixel shader is called
+on each pixel in the game and generates its final colour. Effect files can contain multiple
+versions of these shaders that are targetted at different hardware and systems.
+Here is the file:</p>
+<div class="highlight-python"><pre>&lt;effect name="plaintext" default="true"&gt;
+  &lt;glsl type="vertex"&gt;
+    attribute vec4 POSITION;
+    attribute vec2 TEXCOORD0;
+
+    varying vec2 TexCoordConnect;
+
+    uniform mat4 World;
+    uniform mat4 View;
+    uniform mat4 Proj;
+
+    void main(void)
+    {
+      TexCoordConnect = TEXCOORD0;
+      gl_Position = Proj * View * World * POSITION;
+    }
+  &lt;/glsl&gt;
+  &lt;glsl type="pixel"&gt;
+    uniform sampler2D Texture;
+
+    varying lowp vec2 TexCoordConnect;
+
+    void main(void)
+    {
+      gl_FragColor = texture2D(Texture, TexCoordConnect);
+    }
+  &lt;/glsl&gt;
+  &lt;dynamic name="World" type="matrix4x4"/&gt;
+  &lt;dynamic name="View" type="matrix4x4"/&gt;
+  &lt;dynamic name="Proj" type="matrix4x4"/&gt;
+  &lt;static name="Texture" type="texture" hint="diffuse" aux="Sampler"/&gt;
+&lt;/effect&gt;</pre>
+</div>
+<p>Save this into you data-source hierarchy, I usually put effects into an effects
+directory. Next we need to add this file to the project.xml file, by adding
+this line:</p>
+<div class="highlight-python"><pre>&lt;include filename="effects\plaintext.effect.xml"/&gt;</pre>
+</div>
+</div>
+<div class="section" id="configuring-the-export">
+<h2>4) Configuring the export<a class="headerlink" href="#configuring-the-export" title="Permalink to this headline">¶</a></h2>
+<p>Firstly export the collada file in texthier mode. To do this call:</p>
+<div class="highlight-python"><pre>&lt;g3d&gt;\bin\converter\G3D.Converter.Batch.exe &lt;COLLADA file&gt; texthier</pre>
+</div>
+<p>This writes out text versions of the data extracted from the COLLADA file.
+This is useful for seeing what state the data is in, and what the export
+process is going to name things. This step is not a necessity when you
+become familiar with your export process.</p>
+<p>Each file exported is given a name, this usually comes from the filename
+of the file exported, minus the path and extension. It is a very good idea
+to make these unique to a project, this prevents name clashes.</p>
+<p>It has output the text files in the a directory below your data-source directory
+The path would be: &lt;project&gt;/data-source/out/&lt;name&gt;/ (for example
+tutorial/data-source/out/tut/).
+You can change the output location by adding a directory entry with the
+name of &#8220;out&#8221; to your project.xml file (see above for details).</p>
+<p>Have a look at the &lt;name&gt;.g3d.node file, this is a description of the
+hierarchy of objects in your COLLADA file. There should be a node that
+has a model attached, make a note of the name of the node and of the model.
+(I have tut.tut.cube and tut.cubeShape).</p>
+</div>
+<div class="section" id="generating-the-hierarchy">
+<h2>5) Generating the hierarchy<a class="headerlink" href="#generating-the-hierarchy" title="Permalink to this headline">¶</a></h2>
+<p>The COLLADA file has a hierarchy in it (we saw this in the g3d.node file), but
+this often has nodes we don&#8217;t require and we may want nodes from other COLLADA
+files in our hierarchy. So we create a level file. This is created in the same
+directory structure as the COLLADA file, organised as you see fit. (I have
+created a file data-source/tut/level.xml).</p>
+<p>The file should look like this:</p>
+<div class="highlight-python"><pre>&lt;level name="test"&gt;
+  &lt;scene name="testScene" type="simple"/&gt;
+  &lt;include filename="tut.dae"/&gt;
+  &lt;gameobject name="root"&gt;
+  &lt;/gameobject&gt;
+&lt;/level&gt;</pre>
+</div>
+<p>The root element should be a level element, it has an optional attribute name
+which specifies the files name, if this is not specified, then the name of the
+file is used (like with COLLADA files). Next we include any other files we are
+going to use, in this example the COLLADA file. The filename is relative to the
+this file (or an absolute path). Then we specify the root gameobject, this usually
+only specifies a name, the converter adds an identity frame module (that sets the
+local matrix to identity) and a dummy module (that has no visible component).</p>
+<p>Now we add a camera to the root game object:</p>
+<div class="highlight-python"><pre>&lt;gameobject name="camera"&gt;
+  &lt;framePRS pos="0 -0.5 -5" rot="0 0 0"/&gt;
+  &lt;camera scene="test.testScene"&gt;
+    &lt;perspective fov="1.57" aspect="0.75" nearz="0.01" farz="100"/&gt;
+  &lt;/camera&gt;
+&lt;/gameobject&gt;</pre>
+</div>
+<p>This goes in the game object called root. This specifies a frame PRS module,
+which sets the local matrix from a Position, euler Rotation and Scale. We
+can specify the pos, rot and scale values here, if we do not specify them,
+then they are set to identity. There are other frame types (look at the
+modules documentation) and you can add your own. The other module specified
+is a camera module, which specifies the perspective projection matrix.
+In a camera object the frame module specifies the view matrix rather than
+the world matrix (which happens on model objects).</p>
+<p>Now we add in our model object:</p>
+<div class="highlight-python"><pre>&lt;gameobject name="test" inherit="tut.tut.cube"/&gt;</pre>
+</div>
+<p>This creates a new game object, called test that gets its data from a node
+in the COLLADA file, whose name we got earlier. If we do not specify a frame
+module one will be created automatically from the nodes data. If we do
+not specify a dummy, camera, model or any other module that deals with the
+local matrix, a dummy, camera or model module will be created depending on
+the nodes data.</p>
+<p>You will notice we also specified a scene and the camera module
+refer to this. A scene encapsulates a set of models and one active camera
+that are organised in some fashion. The simple type of scene, sorts the models
+per material, but you could create your own scene type to do occlusion, or
+portals (each portal links to a separate scene) or anything you can come up
+with. If you only want to use 1 simple scene, you can remove it and any
+references to it, one will be created automatically.</p>
+</div>
+<div class="section" id="export">
+<h2>6) export<a class="headerlink" href="#export" title="Permalink to this headline">¶</a></h2>
+<p>Finally we export the data:</p>
+<div class="highlight-python"><pre>&lt;g3d&gt;\bin\converter\G3D.Converter.Batch.exe &lt;level file&gt; hierarchy</pre>
+</div>
+<p>This exports the data into a single file &lt;name&gt;.g3d that sits in our data
+directory (I have a file tutorialdatatest.g3d). This file contains all
+the data (models, effects, materials, textures, gameobjects etc) exported
+in binary format. Continue on to the second tutorial:
+<a class="reference external" href="tutorial2.html">Your first G3D Application</a> to learn how to use this data.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Tutorial 1: Preparing Data</a></li>
+<li><a class="reference internal" href="#tutorial">Tutorial</a><ul>
+<li><a class="reference internal" href="#organisation">1) Organisation</a></li>
+<li><a class="reference internal" href="#creating-a-model">2) Creating a model</a></li>
+<li><a class="reference internal" href="#effect-file">3) Effect file</a></li>
+<li><a class="reference internal" href="#configuring-the-export">4) Configuring the export</a></li>
+<li><a class="reference internal" href="#generating-the-hierarchy">5) Generating the hierarchy</a></li>
+<li><a class="reference internal" href="#export">6) export</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">G3D</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="tutorial2.html"
+                        title="next chapter">Tutorial 2: Your first G3D Application</a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="tutorial2.html" title="Tutorial 2: Your first G3D Application"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="G3D"
+             >previous</a> |</li>
+        <li><a href="index.html">G3D 1.00 release 1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Philip Hodgson.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

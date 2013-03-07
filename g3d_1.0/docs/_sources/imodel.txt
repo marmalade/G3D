@@ -1,0 +1,40 @@
+model input
+===========
+
+A model is specified in a COLLADA file. You can modify the processing of the model by specifying models settings
+in the alongside configuration xml file, or more globally in the level xml file or in the project.xml file.
+
+model settings section
+----------------------
+
+In the alongside configuration xml you can specify local settings for the model or
+in the project.xml or a level file you can specify global or level wide settings for models.
+
+model (settings) element has::
+
+    attribute		name			1			string
+        When in an alongside configuration xml this specifies the model to configure.
+	attribute		optimise		0 or 1		bool
+		Do we apply any optimisation to the model?
+	element			tolerance		0 or more
+		Tolerance values for each channel, that is how close to merge items of that channel, channels are semantic names (eg TEXCOORD2).
+	element			channel			0 or more
+		configuration of an individual channel, this restricts the channels available.
+
+tolerance element has::
+
+    attribute		name			1			string
+		Name of the channel to set the tolerance on.
+    attribute		value			1			float
+		Value of the tolerance, 0 means do not optimise this channel.
+
+channel element has::
+
+    attribute		name			1			string
+		Name of the channel is to be changed to.
+    attribute		semantic		0 or 1		string
+		Semantic of the channel to change (eg TEXCOORD). If this is not set the name becomes the semantic and set.
+    attribute		set				0 or 1		int
+		Number of the semantic set to change (eg 2 (for TEXCOORD2)).
+    attribute		default			0 or 1		int
+		If set this is the default value to put in the index data.

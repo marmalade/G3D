@@ -1,0 +1,246 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Tutorial 2: Your first G3D Application &mdash; G3D 1.00 release 1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.00 release 1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="G3D 1.00 release 1 documentation" href="index.html" />
+    <link rel="next" title="Tutorial 3: Adding a custom module" href="tutorial3.html" />
+    <link rel="prev" title="Tutorial 1: Preparing Data" href="tutorial1.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="tutorial3.html" title="Tutorial 3: Adding a custom module"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="tutorial1.html" title="Tutorial 1: Preparing Data"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">G3D 1.00 release 1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="tutorial-2-your-first-g3d-application">
+<h1>Tutorial 2: Your first G3D Application<a class="headerlink" href="#tutorial-2-your-first-g3d-application" title="Permalink to this headline">¶</a></h1>
+<p>This tutorial will take you through creating your first G3D application.
+We will make use of the data we created in tutorial 1 (or you can use
+data from one of the examples).</p>
+<div class="section" id="making-the-project">
+<h2>1) Making the project<a class="headerlink" href="#making-the-project" title="Permalink to this headline">¶</a></h2>
+<p>Go to the root directory that we created in tutorial 1 (that is the directory
+containing the data and data-source directories), if you did not follow
+tutorial 1, make a blank directory. In this directory create 2 blank files,
+tutorial.mkb and tutorial.cpp</p>
+<p>In tutorial.mkb add these lines:</p>
+<div class="highlight-python"><pre>file tutorial.cpp
+subproject ../../src/g3d</pre>
+</div>
+<p>This creates a Marmalade project, which contains one file, tutorial.cpp and
+pulls in the g3d subproject. You will probably need to adjust the subproject
+path to reflect your file hierarchy.</p>
+<p>Now run this mkb.</p>
+</div>
+<div class="section" id="first-g3d-program">
+<h2>2) First G3D Program<a class="headerlink" href="#first-g3d-program" title="Permalink to this headline">¶</a></h2>
+<p>Now in tutorial.cpp we include some headers:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#include &quot;G3DCore.h&quot;</span>
+<span class="c">#include &quot;G3DMarmalade.h&quot;</span>
+<span class="c">#include &quot;G3DHelper.h&quot;</span>
+</pre></div>
+</div>
+<p>These load the headers for some of the different sections of G3D. We are loading G3DCore,
+which is the interfaces to the graphics and system sections; G3DMarmalade,
+which is an implementation of the system section; and G3DHelper, which is a set of
+helper classes, including encapsulating the main loop. These headers and headers for
+other G3D sections are in h directory of the g3d source.</p>
+<p>Next we create our application class:</p>
+<div class="highlight-python"><pre>class CGame : public CG3DApp
+{
+public:
+    CGame() : CG3DApp(MakeG3DSystemMarmalade()) {}
+protected:
+    virtual void InitInternal() { }
+    virtual bool UpdateInternal(float timeStep) { return true; }
+    virtual void RenderInternal(float timeStep) { }
+    virtual void ShutdownInternal() { }
+};</pre>
+</div>
+<p>This derives our application class from the G3DHelper class CG3DApp.
+Firstly we initialise CG3DApp with an implementation of the system
+section, this is an interface between Marmalade and G3D. Next we
+implement four functions. InitInternal gets called first, then on
+each frame, UpdateInternal and RenderInternal get called, then
+ShutdownInternal gets called when the app gets shut down, this
+happens due to external events, or if UpdateInternal returns false.</p>
+<p>Next we need a main function:</p>
+<div class="highlight-python"><pre>int main()
+{
+    CGame game;
+    game.Run();
+}</pre>
+</div>
+<p>This creates a standard main function, which creates our application
+class and run&#8217;s it.</p>
+<p>Now we need to set up some global state, in the InitInternal function add:</p>
+<div class="highlight-python"><pre>m_Graphics-&gt;SetGlobalSet(CG3DGlobalSet::COLOUR, new CG3DColourSet(CG3DColour(0, 255, 0)));
+m_Graphics-&gt;SetGlobalSet(CG3DGlobalSet::DEPTH, new CG3DDepthSet(1));
+m_Graphics-&gt;SetGlobalSet(CG3DGlobalSet::CULL, new CG3DCullSet(CG3DCullSet::CULL_BACK));</pre>
+</div>
+<p>Each of these GlobalSets, sets a few global state variables. The main variable is passed
+to the constructor, the others set on the class.
+ColourSet deals with clearing the colour buffer and masking colour output.
+DepthSet deals with writing to the depth buffer and masking depth output.
+CullSet deals with culling front and or back faces of polygons.
+GlobalSet.h in the core/h directory of the g3d source, gives more details
+of these sets and the others.</p>
+<p>We can now run this, our very first g3d application, but all we will see is a green screen.</p>
+</div>
+<div class="section" id="adding-data">
+<h2>3) Adding data<a class="headerlink" href="#adding-data" title="Permalink to this headline">¶</a></h2>
+<p>If you have followed along with the first tutorial you should have a g3d
+file in the data directory. If not copy tut.g3d from samples/tutorial/data.</p>
+<p>We need to add these headers:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c">#include &quot;G3DBinary.h&quot;</span>
+<span class="c">#include &quot;G3DHierarchy.h&quot;</span>
+</pre></div>
+</div>
+<p>These load the headers for the binary reader section and the hierarchy section.</p>
+<p>Now add this code into your InitInternal function:</p>
+<div class="highlight-python"><pre>CG3DPtr&lt;CG3DBinaryLoader&gt; binary = new CG3DBinaryLoader(m_Graphics.get());
+binary-&gt;InitFile("test.g3d");</pre>
+</div>
+<p>This creates a binary loader and loads your g3d file&#8217;s data table,
+change the name if it is different. CG3DPtr is a smart pointer that
+automatically calls AddRef and Release on the item it contains,
+if you need a C pointer call get() on it.</p>
+<p>Now we need to load some data from the file. first add these fields
+on the class:</p>
+<div class="highlight-python"><pre>private:
+    CG3DPtr&lt;CG3DGameObject&gt; m_Hier;
+    CG3DPtr&lt;CG3DScene&gt; m_Scene;</pre>
+</div>
+<p>These point to the game object hierarchy and the scene to draw.</p>
+<p>We need to load these from the file, add this into the InitInternal
+function:</p>
+<div class="highlight-python"><pre>m_Scene = binary-&gt;GetData&lt;CG3DScene&gt;("test.testScene");
+m_Hier = binary-&gt;GetData&lt;CG3DGameObject&gt;("test.root");</pre>
+</div>
+<p>This loads the scene and the game object hierarchy, you will
+probably have to adjust your names, look for your scene
+and the top level gameobject in your level file and prefix
+with the name given to the file. If you did not specify a scene
+it will be called scene. If you copied tut.g3d, the names are
+test.testScene and test.root.</p>
+<p>Add this to your InitInternal function:</p>
+<div class="highlight-python"><pre>m_Scene-&gt;Upload();</pre>
+</div>
+<p>This uploads all the graphics data in the scene (The model module
+adds its models to the scene on activation) to the graphics device.</p>
+<p>Add this to your UpdateInternal function:</p>
+<div class="highlight-python"><pre>m_Hier-&gt;DoFrame(timeStep);</pre>
+</div>
+<p>This dispatches any pending events on the game objects and sends
+the update event to each game object. timeStep is the amount of
+time elapsed since DoFrame was last called.</p>
+<p>And finally this to your RenderInternal function:</p>
+<div class="highlight-python"><pre>m_Scene-&gt;Apply();</pre>
+</div>
+<p>This draws all the objects in the scene.</p>
+<p>That is it, run your app you should now be drawing a model on screen.</p>
+<p>If this does not look very good try adding a framePRS to the test
+game object in your level file to adjust the models position, or adjust the
+cameras position and perspective matrix.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Tutorial 2: Your first G3D Application</a><ul>
+<li><a class="reference internal" href="#making-the-project">1) Making the project</a></li>
+<li><a class="reference internal" href="#first-g3d-program">2) First G3D Program</a></li>
+<li><a class="reference internal" href="#adding-data">3) Adding data</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="tutorial1.html"
+                        title="previous chapter">Tutorial 1: Preparing Data</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="tutorial3.html"
+                        title="next chapter">Tutorial 3: Adding a custom module</a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="tutorial3.html" title="Tutorial 3: Adding a custom module"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="tutorial1.html" title="Tutorial 1: Preparing Data"
+             >previous</a> |</li>
+        <li><a href="index.html">G3D 1.00 release 1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Philip Hodgson.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

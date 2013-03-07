@@ -1,0 +1,74 @@
+.. G3D documentation master file, created by
+   sphinx-quickstart on Sun Jan 20 13:58:05 2013.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
+
+G3D
+===
+
+G3D is a modular graphics engine built on top of Marmalade and OpenGL ES 2.0.
+It is aimed at a similar level to XNA, or can be seen as an alternative to IwGx
+utilising OpenGL ES 2.0 rather than OpenGL ES 1.x style of data.
+
+Tutorials
+=========
+
+1) `Preparing Data <tutorial1.html>`_
+2) `Your first G3D Application <tutorial2.html>`_
+3) `Adding a custom module <tutorial3.html>`_
+
+Structure
+=========
+
+G3D is made up of 4 parts:
+
+1) `Tier 0 <tier0.html>`_
+
+	Tier 0 contains the core classes, a C++ wrapper around GLES2 that handles
+	resource managment, a wrapper around essential Marmalade functions and
+	a maths library.
+
+2) `Tier 1 <tier1.html>`_
+
+	This is a set of helper classes for managing the Application loop,
+	for loading from text files and loading from a binary wad file.
+
+3) `Tier 2 <tier2.html>`_
+
+	This is a hierarchy of game objects and a scene management system.
+
+4) `Converter <converter.html>`_
+
+	This converts from textures, COLLADA files and configuration xml files
+	into text and binary formats used by G3D.
+
+Note: A binary wad file is a collection of binary data packed into a single file.
+
+Indices and tables
+==================
+
+.. toctree::
+
+   tutorial1
+   tutorial2
+   tutorial3
+   tier0
+   tier1
+   tier2
+   converter
+   ffteffect
+   fftmaterial
+   ffttexture
+   fftmodel
+   fftnode
+   ffbinary
+   itexture
+   ieffect
+   imaterial
+   imodel
+   inode
+   level
+   naming
+
+* :ref:`search`
+

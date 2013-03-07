@@ -1,0 +1,269 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Tutorial 3: Adding a custom module &mdash; G3D 1.00 release 1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.00 release 1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="G3D 1.00 release 1 documentation" href="index.html" />
+    <link rel="next" title="Tier 0" href="tier0.html" />
+    <link rel="prev" title="Tutorial 2: Your first G3D Application" href="tutorial2.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="tier0.html" title="Tier 0"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="tutorial2.html" title="Tutorial 2: Your first G3D Application"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">G3D 1.00 release 1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="tutorial-3-adding-a-custom-module">
+<h1>Tutorial 3: Adding a custom module<a class="headerlink" href="#tutorial-3-adding-a-custom-module" title="Permalink to this headline">¶</a></h1>
+<p>This tutorial will take you through adding a custom module to your application.
+As well as adding it to the code we will add it to the data so it can be controlled
+by the level file. This allows modules to be in the control of the designers,
+relieving some of the programmers workload.</p>
+<p>You should have done tutorial 1 and tutorial 2 before doing this tutorial.</p>
+<div class="section" id="making-the-module">
+<h2>1) Making the module<a class="headerlink" href="#making-the-module" title="Permalink to this headline">¶</a></h2>
+<p>Using the code and data from tutorial 2, open up the project and the file tutorial1.cpp
+In tutorial.cpp add these lines:</p>
+<div class="highlight-python"><pre>class CMyFirstModule : public CG3DUpdateModule
+{
+public:
+    CMyFirstModule() : CG3DUpdateModule(0), m_Angle(0), m_Speed(1) {}
+    virtual void DoUpdate(float timeStep) {
+        CG3DVector3* rot = m_Parent-&gt;GetData&lt;CG3DVector3&gt;("frame.rot");
+        rot-&gt;y = m_Angle;
+
+        m_Angle+=(float)M_PI*40.0f*timeStep*m_Speed/180.0f;
+    }
+public:
+    float m_Speed;
+    float m_Angle;
+};</pre>
+</div>
+<p>This creates a new module derived from UpdateModule, this means that DoUpdate is called
+on every frame. In this function, we grab the rotation data from the frame module and
+set the y rotation. The angle is then updated by adding an constant that is multiplied by
+timeStep (which is the time since the last frame) and speed, both of which are measured in
+seconds. Using timestep gives us smooth animation as we are not dependent on the frame rate.</p>
+</div>
+<div class="section" id="add-the-module-to-the-game-object">
+<h2>2) Add the module to the Game Object<a class="headerlink" href="#add-the-module-to-the-game-object" title="Permalink to this headline">¶</a></h2>
+<p>Now add this code to the InitInternal function after getting the hierarchy root:</p>
+<div class="highlight-python"><pre>CG3DPtr&lt;CG3DGameObject&gt; model = binary-&gt;GetData&lt;CG3DGameObject&gt;("test.root.test");
+model-&gt;AddModule("control", new CMyFirstModule, true);</pre>
+</div>
+<p>This gets a reference to the model game object and adds our module to it. This is not a
+new version of the game object, if it is already loaded it just returns the current version.
+When we add the module, we give it 2 other pieces of information, the name of the module,
+this allows us to reference the module and if we should enable the module now.</p>
+</div>
+<div class="section" id="make-a-converter-plugin">
+<h2>3) Make a converter plugin<a class="headerlink" href="#make-a-converter-plugin" title="Permalink to this headline">¶</a></h2>
+<p>Using Visual Studio 2012 Express for Windows Desktop (or Visual Studio 2012 Pro or higher),
+create a Visual C#/Windows/Class Library project. Then add a reference to:</p>
+<div class="highlight-python"><pre>&lt;g3d&gt;/bin/converter/G3D.Converter.Converter.dll</pre>
+</div>
+<p>Rename class1.cs to Plugin.cs (or whatever you want your plugin to be called), then to this file add:</p>
+<div class="highlight-python"><pre>using G3D.Converter.Converter;</pre>
+</div>
+<p>This references the base converter classes. Next set the Plugin class to be public and derive
+from IConvertData, then implement the IConvertData interface, after tidying up it should look
+like this:</p>
+<div class="highlight-python"><pre>public class Plugin : IConvertModule
+{
+    public void StartExport() {}
+    public void Process(object item) {}
+    public void Setup(ConverterMgr mgr, IConvertItem parent) {}
+
+    public string name { get; }
+}</pre>
+</div>
+<p>we should set the name of the plugin to something, say myplugin, like this:</p>
+<div class="highlight-python"><pre>public string name { get { return "myplugin"; } }</pre>
+</div>
+<p>This is used if our plugin is used for specifying an export, we are not doing that, but we need to
+set it to something.</p>
+</div>
+<div class="section" id="create-a-control-module-handler">
+<h2>4) Create a control module handler<a class="headerlink" href="#create-a-control-module-handler" title="Permalink to this headline">¶</a></h2>
+<p>Next we need to create a class that will export our control module:</p>
+<div class="highlight-python"><pre>public class ControlModule : GOBModule
+{
+    public override void Load(XElement item)
+    {
+        LoadBase(item, "control", true);
+    }
+    public override void Save(Binary binary) {}
+}</pre>
+</div>
+<p>(you may also have to add System.Xml.Linq to your using list). We also add this code into the
+plugin&#8217;s Setup function:</p>
+<div class="highlight-python"><pre>mgr.SetModuleFactory("control", () =&gt; new ControlModule());</pre>
+</div>
+<p>This add the control module exporter to the module list, referenced as &#8220;control&#8221;. So when we create an
+element called control within a game object, it will call this module to load attributes and sub elements,
+and to save the data.</p>
+</div>
+<div class="section" id="add-a-parameter">
+<h2>5) Add a parameter<a class="headerlink" href="#add-a-parameter" title="Permalink to this headline">¶</a></h2>
+<p>Next we add a parameter to the module handler, called speed. Firstly we add the member variable to ControlModule:</p>
+<div class="highlight-python"><pre>public float speed = 1.0f;</pre>
+</div>
+<p>Next we add this code to the end of the Load function:</p>
+<div class="highlight-python"><pre>string xSpeed = null;
+if (item != null)
+{
+    xSpeed = (string)item.Attribute("speed");
+}
+if (xSpeed != null)
+{
+    speed = float.Parse(xSpeed);
+}</pre>
+</div>
+<p>This tries to load the attribute speed from the xml and set the member variable to this.</p>
+<p>Finally we add this to the Save function:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">binary</span><span class="o">.</span><span class="n">bw</span><span class="o">.</span><span class="n">Write</span><span class="p">(</span><span class="n">speed</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Now we should be able to read the speed attribute from the level xml file and save it to the binary file.</p>
+</div>
+<div class="section" id="add-the-plugin-to-the-converter">
+<h2>6) Add the plugin to the converter<a class="headerlink" href="#add-the-plugin-to-the-converter" title="Permalink to this headline">¶</a></h2>
+<p>Change the projects build options output path to something sensible and rebuild the project.
+Next open the file binconverterG3D.Converter.Batch.xml. Add a line like this to the file:</p>
+<div class="highlight-python"><pre>&lt;plugin filename="..\..\samples\tutorial\tools\MyPlugin.dll"/&gt;</pre>
+</div>
+<p>Changing the filename to point to your plugin, this path is relative to the xml file or absolute.</p>
+</div>
+<div class="section" id="modifying-your-data">
+<h2>7) Modifying your data<a class="headerlink" href="#modifying-your-data" title="Permalink to this headline">¶</a></h2>
+<p>In your level file from tutorial 1 add this line inside the game object that references your model:</p>
+<div class="highlight-python"><pre>&lt;control speed="-1"/&gt;</pre>
+</div>
+<p>This tells the game object to add a contol module with a speed parameter of -1.</p>
+<p>Now run the converter again.</p>
+</div>
+<div class="section" id="modifying-the-tutorial">
+<h2>8) Modifying the tutorial<a class="headerlink" href="#modifying-the-tutorial" title="Permalink to this headline">¶</a></h2>
+<p>Finally we need to modify the tutorial to load this data. Remove the 2 lines we added to add the control
+module to the model game object. Next add this code above the app class:</p>
+<div class="highlight-python"><pre>class ControlModuleHandler : public CG3DBinaryHandler {
+public:
+    virtual CG3DRefCount* Load(BinaryFP* fp) {
+        CMyFirstModule* module = new CMyFirstModule;
+        module-&gt;m_Speed = fp-&gt;ReadFloat();
+        return module;
+    }
+};</pre>
+</div>
+<p>This creates a new MyFirstModule and reads the float parameter. Finally add this after initialising
+the binary loader:</p>
+<div class="highlight-python"><pre>binary-&gt;AddModuleHandler("control",new ControlModuleHandler());</pre>
+</div>
+<p>This calls the ControlModuleHandler when it reads a control module.</p>
+<p>Now run it, it should rotate the other way.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Tutorial 3: Adding a custom module</a><ul>
+<li><a class="reference internal" href="#making-the-module">1) Making the module</a></li>
+<li><a class="reference internal" href="#add-the-module-to-the-game-object">2) Add the module to the Game Object</a></li>
+<li><a class="reference internal" href="#make-a-converter-plugin">3) Make a converter plugin</a></li>
+<li><a class="reference internal" href="#create-a-control-module-handler">4) Create a control module handler</a></li>
+<li><a class="reference internal" href="#add-a-parameter">5) Add a parameter</a></li>
+<li><a class="reference internal" href="#add-the-plugin-to-the-converter">6) Add the plugin to the converter</a></li>
+<li><a class="reference internal" href="#modifying-your-data">7) Modifying your data</a></li>
+<li><a class="reference internal" href="#modifying-the-tutorial">8) Modifying the tutorial</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="tutorial2.html"
+                        title="previous chapter">Tutorial 2: Your first G3D Application</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="tier0.html"
+                        title="next chapter">Tier 0</a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="tier0.html" title="Tier 0"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="tutorial2.html" title="Tutorial 2: Your first G3D Application"
+             >previous</a> |</li>
+        <li><a href="index.html">G3D 1.00 release 1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Philip Hodgson.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

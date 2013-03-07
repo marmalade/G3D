@@ -1,0 +1,26 @@
+texture binary format
+=====================
+
+This file has a texture and its images and settings.
+
+	TEXT
+
+		This is the root section of a texture, it has a header::
+
+			byte filter		// min, mag and mip filter settings + cube flag
+			byte s			// wrap in s direction setting
+			byte t			// wrap in t direction setting
+			byte numMips	// number of mip map levels
+			uint num		// number of images
+
+		filter is made up of one of MIN_NONE=0, MIN_NEAREST=1, MIN_LINEAR=2 followed by one of
+		MAG_NONE=0, MAG_NEAREST=4, MAG_LINEAR=8 followed by one of MIP_NONE=0, MIP_NEAREST=16, MIP_LINEAR=32,
+		optionally followed by CUBE=128.
+		s and t are made up of one of CLAMP=0, MIRRORED=1, REPEAT=2, BORDER=3, MIRROR_ONCE=4
+
+		This is followed by a number of IMAG sections.
+
+	IMAG
+
+		
+

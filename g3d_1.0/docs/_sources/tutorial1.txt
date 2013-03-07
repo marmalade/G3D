@@ -1,0 +1,228 @@
+Tutorial 1: Preparing Data
+==========================
+
+This tutorial takes you through creating a piece of data for use in your game.
+We will be exporting a single piece of data, but this can easily be scaled up
+to exporting whole levels.
+
+Tutorial
+========
+
+1) Organisation
+~~~~~~~~~~~~~~~
+
+It is always best to work out our directory structure before we begin. Before
+you know it, we will have lots of data flying about in various stages of conversion,
+so we need to get organised.
+
+a) Create a directory for the root of the project (I am calling mine tutorial).
+b) Create 3 directories inside this: art, data-source and data.
+	art is where your 3d art package files and your source images are stored, this
+	should be organised into a folder structure, as you see fit.
+	data-source is where the intermediate data files live. That is the COLLADA files
+	and the xml configuration files that drive the converter, we will come to those soon.
+	data is where the output data goes. Marmalade expects that data it uses lives in here.
+c) In the data-source directory create a file project.xml. This file has project wide
+	configuration settings for your project any settings you want to apply to the whole
+	project put in here.
+d) In the project.xml file add this code:
+	::
+
+		<project>
+		</project>
+
+	This tells the Converter that this is a project settings file.
+
+e) Add in this code into the project section:
+	::
+
+		<directory name="binary" path="..\data"/>
+
+	This specifies that the "binary" directory, which tells the Converter where to put its
+	binary output files, is our data directory. We can specify the path as an absolute
+	path or relative to the project.xml file.
+
+There, we now have the basis for organising our project.
+
+2) Creating a model
+~~~~~~~~~~~~~~~~~~~
+
+Firstly we need to get hold of a COLLADA converter for our favourite 3D art package.
+Thankfully these are widepread, and are available for the majority of packages.
+If you are using 3DS Max or Maya, I recommend you use the OpenCollada exporters as
+they represent the package's data more faithfully than other exporters.
+
+Now we need to create a model in our package. In terms of the tutorial, it does not
+matter what shape this is, that is up to you, but more important is the scale it is
+built at. You need to create all your models at a consistant scale, for the purposes
+of this tutorial create it to be about 1 or 2 units in each dimension.
+
+Assign a standard material to the whole model and set a texture on the material,
+You can have more than one material on a model, and lots of different material
+types and parameters, but we have done it this way to keep it simple.
+
+There is a naming convention to follow with materials, the name of the material
+should be in the form <material name>_<effect name>. This signals to the converter
+which effect to use with the material. We will name the effect textplain (So I am going to
+call the material stone_textplain). It is a good idea to name the model to something sensible
+too, as we will refer to it later (I am going to call it cube).
+
+You should save the scene into the art directory you made earlier, It does not matter
+where the texture image is located, in terms of the converter, but you should be organised
+about where you store them.
+
+Now export your scene as a COLLADA file into the data-source directory you made earlier.
+You may want to export it into a subdirectory. (I am going to export the file as tut/tut.dae)
+
+3) Effect file
+~~~~~~~~~~~~~~
+
+We now need to create the effect file that the material will use. This is an xml file
+containing a vertex and a pixel shader. A vertex shader is a small program that is called
+on each vertex of a model, it usually converts the position data from 3D to 2D and
+passes values through to the pixel shader, but it can do much more. A pixel shader is called
+on each pixel in the game and generates its final colour. Effect files can contain multiple
+versions of these shaders that are targetted at different hardware and systems.
+Here is the file::
+
+	<effect name="plaintext" default="true">
+	  <glsl type="vertex">
+		attribute vec4 POSITION;
+		attribute vec2 TEXCOORD0;
+
+		varying vec2 TexCoordConnect;
+
+		uniform mat4 World;
+		uniform mat4 View;
+		uniform mat4 Proj;
+
+		void main(void)
+		{
+		  TexCoordConnect = TEXCOORD0;
+		  gl_Position = Proj * View * World * POSITION;
+		}
+	  </glsl>
+	  <glsl type="pixel">
+		uniform sampler2D Texture;
+
+		varying lowp vec2 TexCoordConnect;
+
+		void main(void)
+		{
+		  gl_FragColor = texture2D(Texture, TexCoordConnect);
+		}
+	  </glsl>
+	  <dynamic name="World" type="matrix4x4"/>
+	  <dynamic name="View" type="matrix4x4"/>
+	  <dynamic name="Proj" type="matrix4x4"/>
+	  <static name="Texture" type="texture" hint="diffuse" aux="Sampler"/>
+	</effect>
+
+Save this into you data-source hierarchy, I usually put effects into an effects
+directory. Next we need to add this file to the project.xml file, by adding
+this line::
+
+  <include filename="effects\plaintext.effect.xml"/>
+
+4) Configuring the export
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Firstly export the collada file in texthier mode. To do this call::
+
+	<g3d>\bin\converter\G3D.Converter.Batch.exe <COLLADA file> texthier
+
+This writes out text versions of the data extracted from the COLLADA file.
+This is useful for seeing what state the data is in, and what the export
+process is going to name things. This step is not a necessity when you
+become familiar with your export process.
+
+Each file exported is given a name, this usually comes from the filename
+of the file exported, minus the path and extension. It is a very good idea
+to make these unique to a project, this prevents name clashes.
+
+It has output the text files in the a directory below your data-source directory
+The path would be: <project>/data-source/out/<name>/ (for example
+tutorial/data-source/out/tut/).
+You can change the output location by adding a directory entry with the
+name of "out" to your project.xml file (see above for details).
+
+Have a look at the <name>.g3d.node file, this is a description of the
+hierarchy of objects in your COLLADA file. There should be a node that
+has a model attached, make a note of the name of the node and of the model.
+(I have tut.tut.cube and tut.cubeShape).
+
+5) Generating the hierarchy
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The COLLADA file has a hierarchy in it (we saw this in the g3d.node file), but
+this often has nodes we don't require and we may want nodes from other COLLADA
+files in our hierarchy. So we create a level file. This is created in the same
+directory structure as the COLLADA file, organised as you see fit. (I have
+created a file data-source/tut/level.xml).
+
+The file should look like this::
+
+	<level name="test">
+	  <scene name="testScene" type="simple"/>
+	  <include filename="tut.dae"/>
+	  <gameobject name="root">
+	  </gameobject>
+	</level>
+
+The root element should be a level element, it has an optional attribute name
+which specifies the files name, if this is not specified, then the name of the
+file is used (like with COLLADA files). Next we include any other files we are
+going to use, in this example the COLLADA file. The filename is relative to the
+this file (or an absolute path). Then we specify the root gameobject, this usually
+only specifies a name, the converter adds an identity frame module (that sets the
+local matrix to identity) and a dummy module (that has no visible component).
+
+Now we add a camera to the root game object::
+
+    <gameobject name="camera">
+      <framePRS pos="0 -0.5 -5" rot="0 0 0"/>
+      <camera scene="test.testScene">
+        <perspective fov="1.57" aspect="0.75" nearz="0.01" farz="100"/>
+      </camera>
+    </gameobject>
+
+This goes in the game object called root. This specifies a frame PRS module,
+which sets the local matrix from a Position, euler Rotation and Scale. We
+can specify the pos, rot and scale values here, if we do not specify them,
+then they are set to identity. There are other frame types (look at the
+modules documentation) and you can add your own. The other module specified
+is a camera module, which specifies the perspective projection matrix.
+In a camera object the frame module specifies the view matrix rather than
+the world matrix (which happens on model objects).
+
+Now we add in our model object::
+
+    <gameobject name="test" inherit="tut.tut.cube"/>
+
+This creates a new game object, called test that gets its data from a node
+in the COLLADA file, whose name we got earlier. If we do not specify a frame
+module one will be created automatically from the nodes data. If we do
+not specify a dummy, camera, model or any other module that deals with the
+local matrix, a dummy, camera or model module will be created depending on
+the nodes data.
+
+You will notice we also specified a scene and the camera module
+refer to this. A scene encapsulates a set of models and one active camera
+that are organised in some fashion. The simple type of scene, sorts the models
+per material, but you could create your own scene type to do occlusion, or
+portals (each portal links to a separate scene) or anything you can come up
+with. If you only want to use 1 simple scene, you can remove it and any
+references to it, one will be created automatically.
+
+6) export
+~~~~~~~~~
+
+Finally we export the data::
+
+	<g3d>\bin\converter\G3D.Converter.Batch.exe <level file> hierarchy
+
+This exports the data into a single file <name>.g3d that sits in our data
+directory (I have a file tutorial\data\test.g3d). This file contains all
+the data (models, effects, materials, textures, gameobjects etc) exported
+in binary format. Continue on to the second tutorial:
+`Your first G3D Application <tutorial2.html>`_ to learn how to use this data.

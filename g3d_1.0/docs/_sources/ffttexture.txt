@@ -1,0 +1,46 @@
+texture text file format
+========================
+
+This file has a texture and its images and settings.
+
+	texture 2d|cube <filter> <wrap u> <wrap v> <num mips>
+
+		Specifies the textures main parameters. If texture is cube, each image specifies the
+		what face it is.
+		
+		The format of the filter is <min filter>"|"<mag filter>"|"<mip filter>
+		where each filter is one of: NONE, NEAREST, LINEAR. For instance::
+
+			LINEAR|NONE|NEAREST
+
+		The format of "wrap u" and "wrap v" is one of CLAMP, MIRRORED, REPEAT, BORDER, MIRROR_ONCE.
+		Num mips specifies the number of mip levels in the texture.
+
+	image 2d|<cube face> <mip level> <width> <height> <bytes per pixel>
+
+		This is the first half of the image specification. Cube face is one of: +x, +y, +z, -x, -y, -z
+
+	format <depth> <type> <layout> <flag>
+
+		This is the second half of the image specification. You can have multiple images with the same
+		mip level and face, the first one with a valid image format is loaded, the rest are discarded.
+
+		depth is one of: Unknown, D32_8_24, D32, D24_8, D11_11_10, D10_10_10_2, D16, D5_6_5, D5_5_5_1, D4_4_4_4, D8, Compressed
+
+		type is one of: Typeless, Float, Unsigned, Signed, Float_Half_Unsigned, Float_Half_Signed
+
+		layout is one of (if it is uncompressed): R, RG, RGB, A, RGBA, L, LA, BGR, BGRA, BGRX, D, DS
+
+		layout is one of (if it is compressed): BC1, BC2, BC3, BC4, BC5, BC6H, BC7, RGB_S3TC_DXT1, RGBA_S3TC_DXT1, RGBA_S3TC_DXT3, RGBA_S3TC_DXT5, ETC1_RGB8, RGB_PVRTC_4BPPV1, RGB_PVRTC_2BPPV1, RGBA_PVRTC_4BPPV1, RGBA_PVRTC_2BPPV1, ATC_RGB, ATC_RGBA_EXPLICIT_ALPHA, ATC_RGBA_INTERPOLATED_ALPHA
+
+		flag is one of:  None, Norm, Norm_SRGB, Alpha
+
+		Not all combinations are valid.
+
+	idata <length>
+
+		specifies the size in bytes of the image data. This is followed by a number of lines in this format::
+		
+			i [[' ']<byte>]*
+
+	That is each line starts with i and is followed by a number of bytes specified in hex, optionally separated by spaces.

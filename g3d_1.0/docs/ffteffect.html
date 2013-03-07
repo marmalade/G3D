@@ -1,0 +1,147 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>effect text file format &mdash; G3D 1.00 release 1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.00 release 1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="G3D 1.00 release 1 documentation" href="index.html" />
+    <link rel="next" title="material text file format" href="fftmaterial.html" />
+    <link rel="prev" title="Converter" href="converter.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="fftmaterial.html" title="material text file format"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="converter.html" title="Converter"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">G3D 1.00 release 1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="effect-text-file-format">
+<h1>effect text file format<a class="headerlink" href="#effect-text-file-format" title="Permalink to this headline">¶</a></h1>
+<p>This file has a number of effects, their shaders and their parameters. Shaders can be inline or in an
+external file.</p>
+<blockquote>
+<div><p>effect &lt;name&gt;</p>
+<blockquote>
+<div>Specifies the start of a new effect.</div></blockquote>
+<p>program &lt;format&gt; &lt;filename&gt;|inline [&lt;inline length&gt;]</p>
+<blockquote>
+<div>This either references a file or is followed by a set of binary data (see below for details).
+Format is the GLES identifer of the type of program binary.</div></blockquote>
+<p>glsl vertex|pixel &lt;filename&gt;|inline [&lt;inline length&gt;]</p>
+<blockquote>
+<div>This either references a file or is followed by a set of text lines (see below for details).</div></blockquote>
+<p>hlsl &lt;hlsl target&gt; &lt;entry function&gt; &lt;filename&gt;|inline [&lt;inline length&gt;]</p>
+<blockquote>
+<div>This either references a file or is followed by a set of text lines (see below for details).
+hlsl target is the type and shader model (eg vs4_0), entry function is the name of the entry point.</div></blockquote>
+<p>binary vertex|pixel &lt;glsl format&gt;|0 &lt;filename&gt;|inline [&lt;inline length&gt;]</p>
+<blockquote>
+<div>This either references a file or is followed by a set of binary data (see below for details).
+If it is a hlsl shader the format is 0 otherwise it is a GLES identifer of the type of shader binary.</div></blockquote>
+<p>dynamic|static &lt;name&gt; &lt;type&gt; [&lt;aux name&gt;]</p>
+<blockquote>
+<div>Add a parameter called name to the effect. In hlsl texture parameters are paired with sampler parameters
+specified by the aux name. &#8220;static&#8221; is usually applied to parameters that have a value in the material
+and &#8220;dynamic&#8221; usually applies to parameters that are set by code, but this is just a convention.
+Type is one of: float1|float2|float3|float4|int1|int2|int3|int4|matrix2x2|matrix3x3|matrix4x4|tmatrix2x2|tmatrix3x3|tmatrix4x4|texture
+where float is 1-4 32 bit floating point values, int is 1-4 32 bit integer values, matrix is a 2x2, 3x3 or 4x4 matrix of 32 bit floating point values,
+tmatrix is transposed on setting it and texture is a CG3DTexture.</div></blockquote>
+</div></blockquote>
+<p>Inline text files</p>
+<blockquote>
+<div>Inline length specifies the number of lines that are used by the shader. The next &#8220;inline length&#8221; lines are the shader.</div></blockquote>
+<p>Inline binary files</p>
+<blockquote>
+<div><p>Inline length specifies the size of the binary data. The format of the data is:</p>
+<div class="highlight-python"><pre>i [[' ']&lt;byte&gt;]*</pre>
+</div>
+<p>That is each line starts with i and is followed by a number of bytes specified in hex, optionally separated by spaces.</p>
+</div></blockquote>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="converter.html"
+                        title="previous chapter">Converter</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="fftmaterial.html"
+                        title="next chapter">material text file format</a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="fftmaterial.html" title="material text file format"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="converter.html" title="Converter"
+             >previous</a> |</li>
+        <li><a href="index.html">G3D 1.00 release 1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Philip Hodgson.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

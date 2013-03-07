@@ -1,0 +1,5 @@
+<converter>
+  <plugin filename="G3D.Converter.Plugin.dll"/>
+  <plugin filename="G3D.Converter.Example.dll"/>
+  <plugin filename="..\..\samples\tutorial\tools\MyPlugin.dll"/>
+</converter>

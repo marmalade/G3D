@@ -1,0 +1,49 @@
+effect text file format
+=======================
+
+This file has a number of effects, their shaders and their parameters. Shaders can be inline or in an
+external file.
+
+	effect <name>
+
+		Specifies the start of a new effect.
+
+	program <format> <filename>|inline [<inline length>]
+		
+		This either references a file or is followed by a set of binary data (see below for details).
+		Format is the GLES identifer of the type of program binary.
+
+	glsl vertex|pixel <filename>|inline [<inline length>]
+
+		This either references a file or is followed by a set of text lines (see below for details).
+
+	hlsl <hlsl target> <entry function> <filename>|inline [<inline length>]
+
+		This either references a file or is followed by a set of text lines (see below for details).
+		hlsl target is the type and shader model (eg vs4_0), entry function is the name of the entry point.
+
+	binary vertex|pixel <glsl format>|0 <filename>|inline [<inline length>]
+	
+		This either references a file or is followed by a set of binary data (see below for details).
+		If it is a hlsl shader the format is 0 otherwise it is a GLES identifer of the type of shader binary.
+
+	dynamic|static <name> <type> [<aux name>]
+
+		Add a parameter called name to the effect. In hlsl texture parameters are paired with sampler parameters
+		specified by the aux name. "static" is usually applied to parameters that have a value in the material
+		and "dynamic" usually applies to parameters that are set by code, but this is just a convention.
+		Type is one of: float1|float2|float3|float4|int1|int2|int3|int4|matrix2x2|matrix3x3|matrix4x4|tmatrix2x2|tmatrix3x3|tmatrix4x4|texture
+		where float is 1-4 32 bit floating point values, int is 1-4 32 bit integer values, matrix is a 2x2, 3x3 or 4x4 matrix of 32 bit floating point values,
+		tmatrix is transposed on setting it and texture is a CG3DTexture.
+		
+Inline text files
+
+	Inline length specifies the number of lines that are used by the shader. The next "inline length" lines are the shader.
+
+Inline binary files
+
+	Inline length specifies the size of the binary data. The format of the data is::
+		
+		i [[' ']<byte>]*
+
+	That is each line starts with i and is followed by a number of bytes specified in hex, optionally separated by spaces.

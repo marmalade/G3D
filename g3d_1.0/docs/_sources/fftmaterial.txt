@@ -1,0 +1,24 @@
+material text file format
+=========================
+
+This file has a number of materials and their parameters.
+
+	material <name> <effect>
+
+		Specifies the start of a new material. "effect" is an effect that has
+		been loaded into the effect library that is passed into the material library.
+
+	parameter <name> float <float> [<float> [<float> [<float>]]]
+
+		This specifies the data for one of the parameters specified in the referenced effect.
+		The data is 1-4 float values.
+
+	parameter <name> int <int> [<int> [<int> [<int>]]]
+
+		This specifies the data for one of the parameters specified in the referenced effect.
+		The data is 1-4 int values.
+
+	parameter <name> texture <filename>
+
+		This specifies the data for one of the parameters specified in the referenced effect.
+		The data is a texture file.

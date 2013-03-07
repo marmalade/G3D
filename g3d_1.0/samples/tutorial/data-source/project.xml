@@ -1,0 +1,4 @@
+<project>
+  <directory name="binary" path="..\data"/>
+  <include filename="effects\plaintext.effect.xml"/>
+</project>

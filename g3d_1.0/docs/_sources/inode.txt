@@ -1,0 +1,24 @@
+node input
+==========
+
+A node is specified in a COLLADA file.
+You can modify the processing of the node by specifying node settings globally in the level xml file or in the project.xml file.
+
+node settings section
+---------------------
+
+In the project.xml or a level file you can specify global or level wide settings for nodes.
+
+node (settings) element has::
+
+	attribute		defaultScene		0 or 1		string
+		Name of the default scene to use in game objects.
+	element			tolerance		0 or more
+		Tolerance values for each channel, that is how close to merge items of that channel, channel is either VECTOR or ANGLE.
+
+tolerance element has::
+
+    attribute		name			1			string
+		Name of the channel to set the tolerance on, channel is either VECTOR or ANGLE.
+    attribute		value			1			float
+		Value of the tolerance, 0 means do not optimise this channel.

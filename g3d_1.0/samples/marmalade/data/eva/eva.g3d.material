@@ -1,0 +1,9 @@
+material face_simple simple
+parameter Texture texture file24.g3d.texture
+
+material body_simple simple
+parameter Texture texture file23.g3d.texture
+
+material hair_simple simple
+parameter Texture texture file25.g3d.texture
+

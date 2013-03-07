@@ -1,0 +1,116 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>texture binary format &mdash; G3D 0.95 release 3 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.95 release 3',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="G3D 0.95 release 3 documentation" href="index.html" />
+    <link rel="prev" title="binary file format" href="ffbinary.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="ffbinary.html" title="binary file format"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">G3D 0.95 release 3 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="texture-binary-format">
+<h1>texture binary format<a class="headerlink" href="#texture-binary-format" title="Permalink to this headline">¶</a></h1>
+<p>This file has a texture and its images and settings.</p>
+<blockquote>
+<div><p>TEXT</p>
+<blockquote>
+<div><p>This is the root section of a texture, it has a header:</p>
+<div class="highlight-python"><pre>byte filter             // min, mag and mip filter settings + cube flag
+byte s                  // wrap in s direction setting
+byte t                  // wrap in t direction setting
+byte numMips    // number of mip map levels
+uint num                // number of images</pre>
+</div>
+<p>filter is made up of one of MIN_NONE=0, MIN_NEAREST=1, MIN_LINEAR=2 followed by one of
+MAG_NONE=0, MAG_NEAREST=4, MAG_LINEAR=8 followed by one of MIP_NONE=0, MIP_NEAREST=16, MIP_LINEAR=32,
+optionally followed by CUBE=128.
+s and t are made up of one of CLAMP=0, MIRRORED=1, REPEAT=2, BORDER=3, MIRROR_ONCE=4</p>
+<p>This is followed by a number of IMAG sections.</p>
+</div></blockquote>
+<p>IMAG</p>
+</div></blockquote>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="ffbinary.html"
+                        title="previous chapter">binary file format</a></p>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="ffbinary.html" title="binary file format"
+             >previous</a> |</li>
+        <li><a href="index.html">G3D 0.95 release 3 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Philip Hodgson.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>
